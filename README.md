@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DocGenius AI — AI Document Generator SaaS
 
-## Getting Started
+A production-ready AI-powered SaaS platform that generates professional **PDF, Word, PowerPoint, and Excel** documents using GPT-4o.
 
-First, run the development server:
+## 🚀 Quick Start
 
+### 1. Install dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd ai-docgen
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment
+```bash
+cp .env.example .env.local
+# Fill in your values:
+# - NEXT_PUBLIC_SUPABASE_URL
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY
+# - SUPABASE_SERVICE_ROLE_KEY
+# - OPENAI_API_KEY
+# - PYTHON_SERVICE_URL (default: http://localhost:8000)
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Set up Supabase
+- Create a project at [supabase.com](https://supabase.com)
+- Run `supabase/schema.sql` in the SQL Editor
+- Run `supabase/seed.sql` to load templates
+- Create a Storage bucket named **`documents`** (public)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Start Python microservice
+```bash
+cd python-service
+python -m venv venv
+venv\Scripts\activate       # Windows
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
 
-## Learn More
+### 5. Start Next.js dev server
+```bash
+cd ai-docgen
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏗 Project Structure
 
-## Deploy on Vercel
+```
+ai-docgen/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx                  # Landing page
+│   │   ├── (auth)/
+│   │   │   ├── login/page.tsx
+│   │   │   └── signup/page.tsx
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx
+│   │   │   ├── dashboard/page.tsx
+│   │   │   ├── editor/page.tsx       # Main editor
+│   │   │   ├── templates/page.tsx
+│   │   │   ├── history/page.tsx
+│   │   │   └── premium/page.tsx
+│   │   └── api/
+│   │       ├── generate/route.ts     # AI content generation
+│   │       ├── rewrite/route.ts      # Text transformation
+│   │       ├── suggestions/route.ts  # AI suggestions
+│   │       ├── download/route.ts     # Calls Python service
+│   │       └── documents/route.ts    # Document CRUD
+│   ├── components/
+│   │   ├── Sidebar.tsx
+│   │   └── Editor/
+│   │       ├── TipTapEditor.tsx
+│   │       └── AIPanel.tsx
+│   ├── lib/
+│   │   ├── supabase/client.ts
+│   │   ├── supabase/server.ts
+│   │   ├── openai.ts
+│   │   ├── store.ts
+│   │   ├── tokens.ts
+│   │   └── utils.ts
+│   └── types/index.ts
+├── supabase/
+│   ├── schema.sql
+│   └── seed.sql
+└── python-service/
+    ├── main.py
+    ├── requirements.txt
+    ├── Dockerfile
+    └── routers/
+        ├── word.py
+        ├── pdf.py
+        ├── pptx.py
+        └── excel.py
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌐 Deployment
+
+| Service | Platform |
+|---------|----------|
+| Next.js Frontend | Vercel |
+| Python Microservice | Railway / Render |
+| Database + Auth + Storage | Supabase |
+
+### Deploy Python service to Railway
+1. Connect `python-service/` folder to a Railway project
+2. Railway auto-detects Dockerfile
+3. Set `PYTHON_SERVICE_URL` in Vercel to the Railway URL
+
+---
+
+## 🔑 Features
+
+- **4 document formats**: PDF, Word, PowerPoint, Excel
+- **GPT-4o powered** content generation
+- **Rich text editor** (TipTap) with full formatting toolbar
+- **AI Actions**: Rewrite, Expand, Summarize, Simplify, Improve
+- **Voice input** (Web Speech API)
+- **12 templates**: Business, Academic, Career, Finance, HR, Marketing
+- **Supabase auth**: Email + Google OAuth
+- **Token system**: Free (10), Pro (100), Premium (unlimited)
+- **Version history** and document management
+- **Share links** (coming soon / UI ready)
+- **Dark mode** with glassmorphism design
+- **Framer Motion** animations throughout

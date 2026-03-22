@@ -74,7 +74,7 @@ export default function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 space-y-1">
+      <nav className="flex-1 px-2 space-y-1" aria-label="Sidebar Navigation">
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
@@ -87,6 +87,7 @@ export default function Sidebar() {
                   ? "bg-brand-600/20 text-brand-300 border border-brand-500/30"
                   : "text-white/60 hover:text-white hover:bg-white/5"
               } ${collapsed ? "justify-center" : ""}`}
+              aria-current={active ? "page" : undefined}
             >
               {active && (
                 <motion.div
@@ -98,21 +99,15 @@ export default function Sidebar() {
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-sm font-medium relative z-10 whitespace-nowrap"
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    className="font-medium"
                   >
                     {item.label}
-                    {item.premium && <span className="ml-1 text-yellow-400">✦</span>}
                   </motion.span>
                 )}
               </AnimatePresence>
-              {collapsed && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-[#1a1a2e] border border-white/10 rounded-lg text-xs text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                  {item.label}
-                </div>
-              )}
             </Link>
           );
         })}

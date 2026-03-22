@@ -181,3 +181,35 @@ body {
               radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
               radial-gradient(ellipse at 50% 80%, rgba(240, 147, 251, 0.1) 0%, transparent 50%);
 }
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  body {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 1rem;
+  }
+}
+
+/* Improved ProseMirror styles */
+.ProseMirror {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+.ProseMirror blockquote {
+  border-left-color: var(--primary);
+}
+
+/* Utility classes */
+.hidden-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+}

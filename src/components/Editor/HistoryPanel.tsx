@@ -65,13 +65,17 @@ export default function HistoryPanel() {
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
         {loading ? (
           <div className="flex justify-center p-4">
-            <RefreshCw className="w-4 h-4 animate-spin text-white/40" />
+            <RefreshCw className="w-4 h-4 animate-spin text-white/40" aria-label="Loading versions" />
           </div>
         ) : versions.length === 0 ? (
           <p className="text-xs text-white/40 text-center">No versions saved yet.</p>
         ) : (
           versions.map((v) => (
-            <div key={v.id} className="glass rounded-xl p-3 border border-white/5 flex flex-col gap-2">
+            <div
+              key={v.id}
+              className="glass rounded-xl p-3 border border-white/5 flex flex-col gap-2"
+              role="listitem"
+            >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-white/80">Version {v.version_number}</span>
                 <span className="text-[10px] text-white/40">
@@ -81,6 +85,7 @@ export default function HistoryPanel() {
               <button
                 onClick={() => handleRestore(v.content)}
                 className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg bg-white/5 hover:bg-brand-500/20 text-xs transition-colors border border-white/5 hover:border-brand-500/30 hover:text-brand-300"
+                aria-label={`Restore version ${v.version_number}`}
               >
                 <RotateCcw className="w-3 h-3" />
                 Restore

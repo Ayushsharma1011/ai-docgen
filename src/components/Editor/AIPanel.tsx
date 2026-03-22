@@ -65,6 +65,7 @@ export default function AIPanel({ suggestions, selectedText, onRewrite }: AIPane
                 onClick={() => handleAction(action.id)}
                 disabled={loading !== null || !selectedText}
                 className="w-full text-left px-3 py-2.5 rounded-xl glass border border-white/5 hover:border-brand-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed group"
+                aria-label={action.label}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{action.label}</span>
@@ -82,6 +83,7 @@ export default function AIPanel({ suggestions, selectedText, onRewrite }: AIPane
             <button
               onClick={() => setShowSuggestions(!showSuggestions)}
               className="flex items-center justify-between w-full text-xs text-white/40 mb-2 px-1"
+              aria-label="Toggle AI suggestions"
             >
               <span className="flex items-center gap-1">
                 <Lightbulb className="w-3 h-3" /> AI Suggestions ({suggestions.length})
@@ -97,16 +99,12 @@ export default function AIPanel({ suggestions, selectedText, onRewrite }: AIPane
                   className="space-y-2 overflow-hidden"
                 >
                   {suggestions.map((s, i) => (
-                    <div key={i} className="glass rounded-xl p-3 border border-white/5 text-xs text-white/70 leading-relaxed">
-                      <div className="flex items-start justify-between gap-2">
-                        <p>{s}</p>
-                        <button
-                          onClick={() => { navigator.clipboard.writeText(s); toast.success("Copied!"); }}
-                          className="flex-shrink-0 text-white/30 hover:text-white/70 transition-colors"
-                        >
-                          <Copy className="w-3 h-3" />
-                        </button>
-                      </div>
+                    <div
+                      key={i}
+                      className="glass rounded-xl p-3 border border-white/5 text-xs text-white/70 leading-relaxed"
+                      role="listitem"
+                    >
+                      {s}
                     </div>
                   ))}
                 </motion.div>

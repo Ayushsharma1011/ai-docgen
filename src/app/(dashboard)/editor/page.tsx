@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useEditorStore } from "@/lib/store";
 import AIPanel from "@/components/Editor/AIPanel";
+import HistoryPanel from "@/components/Editor/HistoryPanel";
 import { DocumentType, DocumentTone } from "@/types";
 import { DOC_TYPE_LABELS, TOKEN_COSTS, PREMIUM_FEATURES } from "@/lib/utils";
 
@@ -41,7 +42,7 @@ function EditorContent() {
     isSaving, setIsSaving, aiSuggestions, setAISuggestions,
   } = useEditorStore();
 
-  const [selectedText, setSelectedText] = useState("");
+  const [selectedText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [userPlan, setUserPlan] = useState("free");
@@ -137,6 +138,8 @@ function EditorContent() {
     }
   }
 
+  const { currentDoc, setCurrentDoc } = useEditorStore();
+
   async function handleSave() {
     if (!editorContent) { toast.error("Nothing to save"); return; }
     setIsSaving(true);
@@ -145,7 +148,7 @@ function EditorContent() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { toast.error("Not logged in"); return; }
 
-      const { error } = await supabase.from("documents").upsert({
+      const docData = {
         user_id: user.id,
         title: topic || "Untitled Document",
         content: editorContent,
@@ -153,8 +156,39 @@ function EditorContent() {
         tone,
         topic,
         instructions,
-      });
+      };
+
+      let response;
+      if (currentDoc?.id) {
+        response = await supabase
+          .from("documents")
+          .update(docData)
+          .eq("id", currentDoc.id)
+          .select()
+          .single();
+      } else {
+        response = await supabase
+          .from("documents")
+          .insert(docData)
+          .select()
+          .single();
+      }
+
+      const { data, error } = response;
+
       if (error) throw error;
+
+      setCurrentDoc(data);
+
+      // Save version history
+      if (data?.id) {
+        await fetch(`/api/documents/${data.id}/versions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: editorContent }),
+        });
+      }
+
       toast.success("Document saved!");
     } catch {
       toast.error("Failed to save");
@@ -191,11 +225,13 @@ function EditorContent() {
       toast.error("Voice input not supported in this browser");
       return;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = false;
     setIsListening(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setTopic(topic + " " + transcript);
@@ -380,13 +416,18 @@ function EditorContent() {
         </div>
       </div>
 
-      {/* Right AI Panel */}
-      <div className="w-64 flex-shrink-0 border-l border-white/5 bg-[#0f0f1a]">
-        <AIPanel
-          suggestions={aiSuggestions}
-          selectedText={selectedText}
-          onRewrite={handleRewrite}
-        />
+      {/* Right AI Panel & History */}
+      <div className="w-64 flex-shrink-0 border-l border-white/5 bg-[#0f0f1a] flex flex-col">
+        <div className="flex-1 overflow-hidden">
+          <AIPanel
+            suggestions={aiSuggestions}
+            selectedText={selectedText}
+            onRewrite={handleRewrite}
+          />
+        </div>
+        <div className="h-1/3 min-h-[200px]">
+          <HistoryPanel />
+        </div>
       </div>
     </div>
   );

@@ -14,11 +14,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadDocs();
-  }, []);
-
-  async function loadDocs() {
+  const loadDocs = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -29,7 +25,12 @@ export default function HistoryPage() {
       .order("updated_at", { ascending: false });
     setDocs(data || []);
     setLoading(false);
-  }
+  };
+
+  useEffect(() => {
+    loadDocs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this document?")) return;

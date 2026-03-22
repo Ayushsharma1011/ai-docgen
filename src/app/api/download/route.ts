@@ -60,9 +60,10 @@ export async function POST(req: NextRequest) {
     const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(fileName);
 
     return NextResponse.json({ url: publicUrl, fileName });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Download error:", err);
-    return NextResponse.json({ error: err.message || "Download failed" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Download failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

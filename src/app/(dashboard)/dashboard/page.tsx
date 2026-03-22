@@ -38,6 +38,8 @@ export default function DashboardPage() {
     load();
   }, []);
 
+  const now = new Date();
+
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -56,8 +58,8 @@ export default function DashboardPage() {
         {[
           { label: "Total Documents", value: docs.length, icon: FileText, color: "text-brand-400" },
           { label: "Token Balance", value: tokens, icon: Coins, color: "text-yellow-400" },
-          { label: "This Month", value: docs.filter(d => new Date(d.created_at) > new Date(Date.now() - 30 * 86400000)).length, icon: TrendingUp, color: "text-emerald-400" },
-        ].map((stat, i) => (
+          { label: "This Month", value: docs.filter(d => new Date(d.created_at) > new Date(now.getTime() - 30 * 86400000)).length, icon: TrendingUp, color: "text-emerald-400" },
+        ].map((stat) => (
           <div key={stat.label} className="glass rounded-2xl p-5 border border-white/5">
             <div className={`${stat.color} mb-2`}><stat.icon className="w-5 h-5" /></div>
             <div className="text-2xl font-black">{stat.value}</div>
@@ -108,6 +110,7 @@ export default function DashboardPage() {
         {loading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(3)].map((_, i) => (
+              // eslint-disable-next-line react/no-array-index-key
               <div key={i} className="glass rounded-2xl p-5 h-32 shimmer border border-white/5" />
             ))}
           </div>

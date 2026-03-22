@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { Crown, Check, Zap, Star, Shield, Coins } from "lucide-react";
 
 const PLANS = [

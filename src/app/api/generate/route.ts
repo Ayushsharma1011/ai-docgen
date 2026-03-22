@@ -44,8 +44,9 @@ export async function POST(req: NextRequest) {
       .eq("user_id", user.id);
 
     return NextResponse.json({ content, tokensRemaining: tokenData.balance - cost });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Generate error:", err);
-    return NextResponse.json({ error: err.message || "Generation failed" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Generation failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

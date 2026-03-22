@@ -20,6 +20,10 @@ export function buildDocumentPrompt(
   docType: DocumentType,
   requirements?: string
 ): string {
+  if (docType === 'docx' && (topic.toLowerCase().includes('resume') || instructions.toLowerCase().includes('resume') || requirements?.toLowerCase().includes('resume') || requirements?.toLowerCase().includes('ats'))) {
+    return buildResumePrompt(topic, instructions, requirements || '', 'Target job or field: ' + (topic || instructions));
+  }
+
   const toneDesc = TONE_DESCRIPTIONS[tone];
 
   if (docType === 'pptx') {

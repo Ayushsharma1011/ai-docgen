@@ -169,7 +169,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
+            className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto"
           >
             {DOC_TYPES.map((type, i) => (
               <motion.div
@@ -178,13 +178,13 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + i * 0.1 }}
                 whileHover={{ scale: 1.05, y: -4 }}
-                className="glass rounded-2xl p-5 text-center hover:border-brand-500/30 transition-all duration-300 border border-white/5"
+                className="glass rounded-2xl p-6 text-center hover:border-brand-500/30 transition-all duration-300 border border-white/5 flex flex-col items-center"
               >
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${type.color} flex items-center justify-center mx-auto mb-3`}>
-                  <type.icon className="w-5 h-5 text-white" />
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-4 shadow-lg`}>
+                  <type.icon className="w-6 h-6 text-white" />
                 </div>
-                <div className="font-semibold text-sm mb-1">{type.label}</div>
-                <div className="text-xs text-white/50">{type.desc}</div>
+                <div className="font-bold text-lg mb-2">{type.label}</div>
+                <div className="text-sm text-white/60 leading-relaxed">{type.desc}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -192,22 +192,22 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24 px-6">
+      <section id="features" className="py-24 px-6 relative">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Everything You Need to <span className="gradient-text">Create Better Docs</span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              Everything You Need to <br className="hidden sm:block" /><span className="gradient-text">Create Better Docs</span>
             </h2>
             <p className="text-white/60 text-lg max-w-2xl mx-auto">
               A complete AI-powered document suite in your browser
             </p>
           </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
@@ -216,13 +216,13 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ scale: 1.02 }}
-                className="glass rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-all duration-300"
+                className="glass rounded-2xl p-8 border border-white/5 hover:border-white/10 transition-all duration-300"
               >
-                <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-4 ${f.color}`}>
-                  <f.icon className="w-5 h-5" />
+                <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 ${f.color}`}>
+                  <f.icon className="w-7 h-7" />
                 </div>
-                <h3 className="font-bold text-lg mb-2">{f.title}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">{f.desc}</p>
+                <h3 className="font-bold text-xl mb-3">{f.title}</h3>
+                <p className="text-white/60 text-base leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -231,18 +231,18 @@ export default function LandingPage() {
 
       {/* How it works */}
       <section id="how-it-works" className="py-24 px-6 aurora-bg">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Three Steps to a <span className="gradient-text">Perfect Document</span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              Three Steps to a <br className="hidden sm:block" /><span className="gradient-text">Perfect Document</span>
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-12">
             {STEPS.map((s, i) => (
               <motion.div
                 key={s.n}
@@ -252,11 +252,11 @@ export default function LandingPage() {
                 transition={{ delay: i * 0.15 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 rounded-2xl btn-glow flex items-center justify-center mx-auto mb-6">
-                  <span className="text-xl font-black">{s.n}</span>
+                <div className="w-20 h-20 rounded-2xl btn-glow flex items-center justify-center mx-auto mb-8">
+                  <span className="text-2xl font-black text-white">{s.n}</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">{s.title}</h3>
-                <p className="text-white/60">{s.desc}</p>
+                <h3 className="text-2xl font-bold mb-4">{s.title}</h3>
+                <p className="text-white/60 text-lg leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -270,12 +270,12 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Simple, <span className="gradient-text">Transparent Pricing</span></h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">Simple, <br className="hidden sm:block" /><span className="gradient-text">Transparent Pricing</span></h2>
             <p className="text-white/60 text-lg">Start free, upgrade when you need more power</p>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-8">
             {PLANS.map((plan, i) => (
               <motion.div
                 key={plan.name}
@@ -284,33 +284,36 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ scale: 1.03 }}
-                className={`glass rounded-2xl p-8 relative border ${plan.popular ? "border-brand-500/50 shadow-glow" : "border-white/5"}`}
+                className={`glass rounded-3xl p-8 lg:p-10 relative border flex flex-col h-full ${plan.popular ? "border-brand-500/50 shadow-glow" : "border-white/5"}`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="btn-glow px-4 py-1 rounded-full text-xs font-bold text-white">MOST POPULAR</span>
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="btn-glow px-5 py-2 rounded-full text-xs font-bold text-white tracking-wider">MOST POPULAR</span>
                   </div>
                 )}
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-4`}>
-                  <Star className="w-6 h-6 text-white" />
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-6`}>
+                  <Star className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-2xl font-black mb-1">{plan.name}</h3>
-                <div className="text-3xl font-black mb-1">
-                  {plan.price}<span className="text-base font-normal text-white/50">/mo</span>
+                <h3 className="text-2xl font-black mb-2">{plan.name}</h3>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-5xl font-black">{plan.price}</span>
+                  <span className="text-lg text-white/50">/mo</span>
                 </div>
-                <div className="text-sm text-brand-400 mb-6">{plan.tokenCount}</div>
-                <ul className="space-y-3 mb-8">
+                <div className="text-sm font-medium text-brand-400 mb-8">{plan.tokenCount}</div>
+                <ul className="space-y-4 mb-10 flex-grow">
                   {plan.features.map((feat) => (
-                    <li key={feat} className="flex items-center gap-2 text-sm text-white/80">
-                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                      {feat}
+                    <li key={feat} className="flex items-start gap-3 text-white/80">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-emerald-400" />
+                      </div>
+                      <span className="text-base">{feat}</span>
                     </li>
                   ))}
                 </ul>
                 <Link
                   href="/signup"
-                  className={`w-full block text-center py-3 rounded-xl font-semibold transition-all duration-300 ${
-                    plan.popular ? "btn-glow text-white" : "glass border border-white/10 text-white/80 hover:text-white hover:border-white/20"
+                  className={`w-full block text-center py-4 rounded-xl font-bold transition-all duration-300 text-lg ${
+                    plan.popular ? "btn-glow text-white" : "glass border border-white/10 text-white hover:bg-white/5"
                   }`}
                 >
                   {plan.cta}

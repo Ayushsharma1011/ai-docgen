@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import {
   Sparkles, Download, Save, Mic, MicOff, RefreshCw,
-  ChevronDown, Wand2, FileText, Presentation, Sheet, File
+  ChevronDown, Wand2, FileText, Presentation, Sheet, File, Share2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useEditorStore } from "@/lib/store";
@@ -197,6 +197,22 @@ function EditorContent() {
     }
   }
 
+  async function handleShare() {
+    if (!currentDoc?.id) { toast.error("Save the document first to share it"); return; }
+    try {
+      const res = await fetch(`/api/documents/${currentDoc.id}/share`, { method: "POST" });
+      const data = await res.json();
+      if (data.shareUrl) {
+        await navigator.clipboard.writeText(data.shareUrl);
+        toast.success("Share link copied to clipboard!");
+      } else {
+        toast.error(data.error || "Failed to generate share link");
+      }
+    } catch {
+      toast.error("Share failed");
+    }
+  }
+
   async function handleDownload() {
     if (!editorContent) { toast.error("Generate content first"); return; }
     setIsDownloading(true);
@@ -369,6 +385,14 @@ function EditorContent() {
             <h1 className="text-sm font-semibold text-white/80">{topic || "New Document"}</h1>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleShare}
+              disabled={!currentDoc?.id}
+              className="glass px-3 py-2 rounded-lg text-sm font-medium border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 text-white/70 hover:text-white disabled:opacity-40"
+              title="Generate shareable link"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
             <button
               onClick={handleSave}
               disabled={isSaving}

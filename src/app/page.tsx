@@ -229,6 +229,13 @@ export default function LandingPage() {
           <div className="dg-hero-grid" />
           <div className="dg-hero-content">
 
+            <motion.div
+              variants={fadeUp} initial="hidden" animate="show" custom={0}
+              className="dg-badge"
+            >
+              <Sparkles style={{ width: 14, height: 14, flexShrink: 0 }} />
+              Powered by GPT-4o · Generate docs in &lt;30 seconds
+            </motion.div>
 
             <motion.h1
               variants={fadeUp} initial="hidden" animate="show" custom={1}

@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
   },
+
+  // ✅ Fix workspace root warning
+  turbopack: {
+    root: __dirname,
+  },
 };
 
 export default nextConfig;

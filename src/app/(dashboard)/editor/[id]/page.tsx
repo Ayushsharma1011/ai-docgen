@@ -57,8 +57,8 @@ export default function EditDocumentPage({ params }: { params: Promise<{ id: str
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#0f0f1a]">
-        <RefreshCw className="w-8 h-8 animate-spin text-brand-400" />
+      <div className="flex items-center justify-center h-screen bg-[#07070f]">
+        <RefreshCw className="w-8 h-8 animate-spin text-[#60a5fa]" />
       </div>
     );
   }

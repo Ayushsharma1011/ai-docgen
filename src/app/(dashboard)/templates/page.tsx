@@ -8,13 +8,23 @@ import { createClient } from "@/lib/supabase/client";
 import { Template } from "@/types";
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Business: "from-blue-500/20 to-cyan-500/20 border-blue-500/30",
-  Academic: "from-violet-500/20 to-purple-500/20 border-violet-500/30",
-  Career: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30",
-  Finance: "from-yellow-500/20 to-orange-500/20 border-yellow-500/30",
-  Analytics: "from-pink-500/20 to-rose-500/20 border-pink-500/30",
-  HR: "from-indigo-500/20 to-blue-500/20 border-indigo-500/30",
-  Marketing: "from-orange-500/20 to-red-500/20 border-orange-500/30",
+  Business: "rgba(59,130,246,0.12)",
+  Academic: "rgba(139,92,246,0.12)",
+  Career: "rgba(16,185,129,0.12)",
+  Finance: "rgba(234,179,8,0.12)",
+  Analytics: "rgba(236,72,153,0.12)",
+  HR: "rgba(99,102,241,0.12)",
+  Marketing: "rgba(249,115,22,0.12)",
+};
+
+const CATEGORY_COLOR_TEXT: Record<string, string> = {
+  Business: "#60a5fa",
+  Academic: "#a78bfa",
+  Career: "#34d399",
+  Finance: "#facc15",
+  Analytics: "#f472b6",
+  HR: "#818cf8",
+  Marketing: "#fb923c",
 };
 
 const DOC_ICONS: Record<string, React.ElementType> = {
@@ -54,8 +64,8 @@ export default function TemplatesPage() {
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-black mb-1">Templates</h1>
-        <p className="text-white/50">Start from a pre-built template. Just fill in your details.</p>
+        <h1 className="text-3xl font-extrabold mb-1 tracking-tight">Templates</h1>
+        <p className="text-white/45">Start from a pre-built template. Just fill in your details.</p>
       </motion.div>
 
       {/* Category filters */}
@@ -66,9 +76,10 @@ export default function TemplatesPage() {
             onClick={() => setFilter(cat)}
             className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
               filter === cat
-                ? "bg-brand-600/20 border-brand-500/50 text-brand-300"
-                : "glass border-white/10 text-white/60 hover:border-white/20 hover:text-white"
+                ? "bg-blue-600/15 border-blue-500/30 text-[#60a5fa]"
+                : "border-white/7 text-white/50 hover:border-white/14 hover:text-white"
             }`}
+            style={filter !== cat ? { background: "rgba(18,18,28,0.7)" } : {}}
           >
             {cat}
           </button>
@@ -78,7 +89,7 @@ export default function TemplatesPage() {
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="glass rounded-2xl h-44 shimmer border border-white/5" />
+            <div key={i} className="rounded-2xl h-44 shimmer border border-white/7" style={{ background: "rgba(18,18,28,0.7)" }} />
           ))}
         </div>
       ) : (
@@ -86,7 +97,8 @@ export default function TemplatesPage() {
           {filtered.map((tpl, i) => {
             const Icon = DOC_ICONS[tpl.doc_type] || FileText;
             const locked = tpl.is_premium && userPlan === "free";
-            const colorClass = CATEGORY_COLORS[tpl.category] || "from-slate-500/20 to-slate-600/20 border-slate-500/30";
+            const catBg = CATEGORY_COLORS[tpl.category] || "rgba(100,116,139,0.12)";
+            const catColor = CATEGORY_COLOR_TEXT[tpl.category] || "#94a3b8";
 
             return (
               <motion.div
@@ -94,32 +106,40 @@ export default function TemplatesPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                whileHover={{ scale: locked ? 1 : 1.02 }}
-                className={`glass rounded-2xl p-5 border ${colorClass} relative group`}
+                whileHover={{ scale: locked ? 1 : 1.02, y: locked ? 0 : -4 }}
+                className="rounded-2xl p-5 border border-white/7 relative group transition-all duration-200 hover:border-white/14"
+                style={{ background: "rgba(18,18,28,0.92)" }}
               >
                 {locked && (
-                  <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center z-10">
+                  <div className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center z-10 backdrop-blur-[2px]">
                     <div className="text-center">
                       <Lock className="w-6 h-6 text-yellow-400 mx-auto mb-1" />
-                      <span className="text-xs text-yellow-400 font-semibold">Pro / Premium</span>
+                      <span className="text-xs text-yellow-400 font-bold">Pro / Premium</span>
                     </div>
                   </div>
                 )}
 
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Icon className="w-5 h-5 text-white/60" />
-                    <span className="text-xs uppercase tracking-wide text-white/40 font-medium">{tpl.doc_type}</span>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: catBg }}>
+                      <Icon style={{ width: 16, height: 16, color: catColor }} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wide text-white/35 font-medium">{tpl.doc_type}</span>
                   </div>
-                  <span className="text-xs glass px-2 py-0.5 rounded-full border border-white/10 text-white/40">{tpl.category}</span>
+                  <span
+                    className="text-xs px-2.5 py-0.5 rounded-full border border-white/7 text-white/35 font-medium"
+                    style={{ background: "rgba(255,255,255,0.03)" }}
+                  >
+                    {tpl.category}
+                  </span>
                 </div>
 
                 <h3 className="font-bold text-base mb-2">{tpl.name}</h3>
-                <p className="text-sm text-white/50 mb-4 line-clamp-2">{tpl.description}</p>
+                <p className="text-sm text-white/42 mb-4 line-clamp-2">{tpl.description}</p>
 
                 <Link
                   href={locked ? "/premium" : `/editor?type=${tpl.doc_type}&template=${tpl.id}`}
-                  className="flex items-center gap-1 text-sm text-brand-400 hover:text-brand-300 transition-colors font-medium"
+                  className="flex items-center gap-1 text-sm text-[#60a5fa] hover:text-[#93c5fd] transition-colors font-semibold"
                 >
                   {locked ? "Upgrade to use" : "Use template"} <ArrowRight className="w-3 h-3" />
                 </Link>
@@ -130,7 +150,7 @@ export default function TemplatesPage() {
       )}
 
       {!loading && filtered.length === 0 && (
-        <div className="text-center py-16 text-white/40">
+        <div className="text-center py-16 text-white/35">
           <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-50" />
           <p>No templates in this category yet.</p>
         </div>

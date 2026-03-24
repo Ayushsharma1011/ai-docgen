@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Sparkles, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -38,27 +38,28 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center px-4 aurora-bg">
+    <div className="min-h-screen bg-[#07070f] flex items-center justify-center px-4 auth-grid-bg">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
       >
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
+          <Link href="/" className="inline-flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl btn-glow flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl">DocGenius <span className="gradient-text">AI</span></span>
+            <span className="font-extrabold text-xl tracking-tight">DocGenius <span className="gradient-text">AI</span></span>
           </Link>
-          <h1 className="text-2xl font-bold mt-6 mb-1">Welcome back</h1>
-          <p className="text-white/50 text-sm">Sign in to your account</p>
+          <h1 className="text-3xl font-extrabold mt-8 mb-2 tracking-tight">Welcome back</h1>
+          <p className="text-white/45 text-sm">Sign in to continue creating documents</p>
         </div>
 
-        <div className="glass rounded-2xl p-8 border border-white/5">
+        <div className="glass rounded-2xl p-8 border border-white/7">
           <button
             onClick={handleGoogle}
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-200 mb-6 text-sm font-medium"
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/[0.04] transition-all duration-200 mb-6 text-sm font-semibold"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -70,14 +71,14 @@ export default function LoginPage() {
           </button>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-white/30 text-sm">or</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-white/7" />
+            <span className="text-white/25 text-xs font-medium uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-white/7" />
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25" />
               <input
                 id="email"
                 type="email"
@@ -85,11 +86,11 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-sm outline-none focus:border-brand-500/60 transition-colors placeholder:text-white/30"
+                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-11 py-3.5 text-sm outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/25"
               />
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -97,12 +98,12 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-sm outline-none focus:border-brand-500/60 transition-colors placeholder:text-white/30"
+                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-11 py-3.5 text-sm outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/25"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/60 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -110,15 +111,15 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-glow py-3 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-white text-black py-3.5 rounded-xl font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:opacity-90 flex items-center justify-center gap-2"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Signing in..." : <>Sign In <ArrowRight className="w-4 h-4" /></>}
             </button>
           </form>
 
-          <p className="text-center text-sm text-white/50 mt-6">
+          <p className="text-center text-sm text-white/45 mt-6">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-brand-400 hover:text-brand-300 transition-colors">
+            <Link href="/signup" className="text-[#60a5fa] hover:text-[#93c5fd] transition-colors font-medium">
               Sign up free
             </Link>
           </p>

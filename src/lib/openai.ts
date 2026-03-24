@@ -137,7 +137,7 @@ export function buildRewritePrompt(
 
 export async function generateContent(prompt: string): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o',
+    model: 'gpt-4o-mini',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.7,
     max_tokens: 4000,
@@ -151,10 +151,34 @@ export async function generateStructuredContent(
   tone: DocumentTone,
   docType: DocumentType,
   requirements?: string
-): Promise<StructuredContent | SlideContent | ExcelContent> {
-  const prompt = buildDocumentPrompt(topic, instructions, tone, docType, requirements);
-  const raw = await generateContent(prompt);
-  // Strip markdown code fences if present
-  const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-  return JSON.parse(cleaned);
+) {
+  try {
+    const prompt = buildDocumentPrompt(topic, instructions, tone, docType, requirements);
+
+    const raw = await generateContent(prompt);
+
+    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    return JSON.parse(cleaned);
+
+  } catch (error: any) {
+    console.error("❌ FINAL ERROR:", error?.message);
+
+    // 🔥 ALWAYS RETURN SAFE DATA
+    return {
+      title: topic || "Demo Document",
+      docType,
+      sections: [
+        {
+          heading: "AI Not Available",
+          body: "OpenAI quota exceeded. Showing demo content instead.",
+          bullets: ["Add billing to enable AI", "This is fallback mode"],
+        },
+      ],
+      metadata: {
+        author: "Fallback System",
+        subject: topic,
+      },
+    };
+  }
 }

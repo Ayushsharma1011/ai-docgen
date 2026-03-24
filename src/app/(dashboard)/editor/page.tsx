@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
+import { useRef } from "react";
 import {
   Sparkles, Download, Save, Mic, MicOff, RefreshCw,
   ChevronDown, Wand2, FileText, Presentation, Sheet, File, Share2
@@ -34,6 +35,7 @@ const TONES: { value: DocumentTone; label: string }[] = [
 ];
 
 function EditorContent() {
+  const editorRef = useRef<any>(null);
   const searchParams = useSearchParams();
   const {
     topic, setTopic, instructions, setInstructions,
@@ -214,22 +216,42 @@ function EditorContent() {
   }
 
   async function handleDownload() {
-    if (!editorContent) { toast.error("Generate content first"); return; }
+    if (!editorContent) {
+      toast.error("Generate content first");
+      return;
+    }
+
     setIsDownloading(true);
+
     try {
+      // 🔥 GET LATEST CONTENT DIRECTLY FROM EDITOR
+      const html = editorRef.current?.getHTML() || editorContent;
+
+      console.log("Latest HTML:", html); // optional debug
+
       const res = await fetch("/api/download", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: editorContent, topic, docType, tone }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: html, // ✅ FIXED
+          topic,
+          docType,
+          tone,
+        }),
       });
+
       const data = await res.json();
+
       if (data.url) {
         window.open(data.url, "_blank");
         toast.success(`${DOC_TYPE_LABELS[docType]} downloaded!`);
       } else if (data.error) {
         toast.error(data.error);
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Download failed — ensure Python microservice is running");
     } finally {
       setIsDownloading(false);
@@ -262,26 +284,26 @@ function EditorContent() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Left Panel - Generation Form */}
-      <div className="w-72 flex-shrink-0 border-r border-white/5 flex flex-col overflow-y-auto bg-[#0f0f1a]">
-        <div className="p-4 border-b border-white/5">
+      <div className="w-72 flex-shrink-0 border-r border-white/7 flex flex-col overflow-y-auto bg-[#07070f]">
+        <div className="p-4 border-b border-white/7">
           <h2 className="font-bold text-sm mb-0.5">AI Generator</h2>
-          <p className="text-xs text-white/40">Describe your document</p>
+          <p className="text-xs text-white/35">Describe your document</p>
         </div>
 
         <div className="p-4 space-y-4 flex-1">
           {/* Doc Type */}
           <div>
-            <label className="block text-xs text-white/50 mb-2">Format</label>
+            <label className="block text-xs text-white/42 mb-2 font-medium">Format</label>
             <div className="grid grid-cols-2 gap-2">
               {DOC_TYPES.map((t) => (
                 <button
                   key={t.value}
                   onClick={() => setDocType(t.value)}
-                  className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${
-                    docType === t.value
-                      ? "bg-brand-600/20 border-brand-500/50 text-brand-300"
-                      : "border-white/10 text-white/60 hover:border-white/20 hover:text-white glass"
-                  } ${t.premium && userPlan === "free" ? "opacity-60" : ""}`}
+                  className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${docType === t.value
+                      ? "bg-blue-600/15 border-blue-500/30 text-[#60a5fa]"
+                      : "border-white/7 text-white/50 hover:border-white/14 hover:text-white"
+                    } ${t.premium && userPlan === "free" ? "opacity-60" : ""}`}
+                  style={docType !== t.value ? { background: 'rgba(255,255,255,0.03)' } : {}}
                 >
                   <t.icon className="w-3.5 h-3.5" />
                   <span>{t.label.split(" ")[0]}</span>
@@ -293,15 +315,15 @@ function EditorContent() {
 
           {/* Tone */}
           <div>
-            <label className="block text-xs text-white/50 mb-2">Tone</label>
+            <label className="block text-xs text-white/42 mb-2 font-medium">Tone</label>
             <div className="relative">
               <select
                 value={tone}
                 onChange={(e) => setTone(e.target.value as DocumentTone)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm appearance-none outline-none focus:border-brand-500/50 transition-colors"
+                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-sm appearance-none outline-none focus:border-blue-500/40 transition-colors"
               >
                 {TONES.map((t) => (
-                  <option key={t.value} value={t.value} className="bg-[#1a1a2e]">{t.label}</option>
+                  <option key={t.value} value={t.value} className="bg-[#12121c]">{t.label}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
@@ -310,20 +332,19 @@ function EditorContent() {
 
           {/* Topic */}
           <div>
-            <label className="block text-xs text-white/50 mb-2">Topic / Title</label>
+            <label className="block text-xs text-white/42 mb-2 font-medium">Topic / Title</label>
             <div className="relative">
               <input
                 type="text"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="e.g. Q4 Marketing Strategy"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 pr-9 text-sm outline-none focus:border-brand-500/50 transition-colors placeholder:text-white/30"
+                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 pr-9 text-sm outline-none focus:border-blue-500/40 transition-colors placeholder:text-white/25"
               />
               <button
                 onClick={handleVoice}
-                className={`absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors ${
-                  isListening ? "text-red-400 animate-pulse" : "text-white/30 hover:text-white/70"
-                }`}
+                className={`absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors ${isListening ? "text-red-400 animate-pulse" : "text-white/30 hover:text-white/70"
+                  }`}
               >
                 {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
               </button>
@@ -332,40 +353,40 @@ function EditorContent() {
 
           {/* Instructions */}
           <div>
-            <label className="block text-xs text-white/50 mb-2">Instructions</label>
+            <label className="block text-xs text-white/42 mb-2 font-medium">Instructions</label>
             <textarea
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Describe what you want in the document..."
               rows={4}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand-500/50 transition-colors resize-none placeholder:text-white/30"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-blue-500/40 transition-colors resize-none placeholder:text-white/25"
             />
           </div>
 
           {/* Requirements */}
           <div>
-            <label className="block text-xs text-white/50 mb-2">Requirements (optional)</label>
+            <label className="block text-xs text-white/42 mb-2 font-medium">Requirements (optional)</label>
             <textarea
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
               placeholder="Include specific sections, data, or formatting..."
               rows={2}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-brand-500/50 transition-colors resize-none placeholder:text-white/30"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-blue-500/40 transition-colors resize-none placeholder:text-white/25"
             />
           </div>
 
           {/* Token cost info */}
-          <div className="glass rounded-xl p-3 border border-white/5 text-xs text-white/50">
+          <div className="rounded-xl p-3 border border-white/7 text-xs text-white/42" style={{ background: 'rgba(18,18,28,0.7)' }}>
             Cost: <span className="text-yellow-400 font-bold">{TOKEN_COSTS[docType]} tokens</span>
           </div>
         </div>
 
         {/* Generate button */}
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-white/7">
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="w-full btn-glow py-3 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full btn-glow py-3 rounded-xl font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isGenerating ? (
               <><RefreshCw className="w-4 h-4 animate-spin" /> Generating...</>
@@ -379,16 +400,17 @@ function EditorContent() {
       {/* Main Editor */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Editor toolbar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#0f0f1a]">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-brand-400" />
-            <h1 className="text-sm font-semibold text-white/80">{topic || "New Document"}</h1>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/7 bg-[#07070f]">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="w-4 h-4 text-[#60a5fa]" />
+            <h1 className="text-sm font-bold text-white/70">{topic || "New Document"}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
               disabled={!currentDoc?.id}
-              className="glass px-3 py-2 rounded-lg text-sm font-medium border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 text-white/70 hover:text-white disabled:opacity-40"
+              className="px-3 py-2 rounded-lg text-sm font-medium border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 text-white/60 hover:text-white disabled:opacity-40"
+              style={{ background: 'rgba(255,255,255,0.03)' }}
               title="Generate shareable link"
             >
               <Share2 className="w-4 h-4" />
@@ -396,7 +418,8 @@ function EditorContent() {
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="glass px-4 py-2 rounded-lg text-sm font-medium border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 text-white/70 hover:text-white"
+              className="px-4 py-2 rounded-lg text-sm font-medium border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 text-white/60 hover:text-white"
+              style={{ background: 'rgba(255,255,255,0.03)' }}
             >
               <Save className="w-4 h-4" />
               {isSaving ? "Saving..." : "Save"}
@@ -404,7 +427,7 @@ function EditorContent() {
             <button
               onClick={handleDownload}
               disabled={isDownloading || !editorContent}
-              className="btn-glow px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50"
+              className="btn-glow px-4 py-2 rounded-lg text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               {isDownloading ? "Preparing..." : `Download ${DOC_TYPE_LABELS[docType]}`}
@@ -413,7 +436,7 @@ function EditorContent() {
         </div>
 
         {/* TipTap Editor */}
-        <div className="flex-1 overflow-hidden bg-[#0f0f1a]">
+        <div className="flex-1 overflow-hidden bg-[#07070f]">
           {isGenerating ? (
             <div className="flex items-center justify-center h-full">
               <motion.div
@@ -425,7 +448,7 @@ function EditorContent() {
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                 >
-                  <Sparkles className="w-10 h-10 text-brand-400 mx-auto mb-4" />
+                  <Sparkles className="w-10 h-10 text-[#60a5fa] mx-auto mb-4" />
                 </motion.div>
                 <p className="text-white/60">Generating your document with GPT-4o...</p>
               </motion.div>
@@ -434,6 +457,7 @@ function EditorContent() {
             <TipTapEditor
               content={editorContent}
               onChange={setEditorContent}
+              editorRef={editorRef} // ✅ ADDED
               placeholder="Click 'Generate with AI' or start typing your document..."
             />
           )}
@@ -441,7 +465,7 @@ function EditorContent() {
       </div>
 
       {/* Right AI Panel & History */}
-      <div className="w-64 flex-shrink-0 border-l border-white/5 bg-[#0f0f1a] flex flex-col">
+      <div className="w-64 flex-shrink-0 border-l border-white/7 bg-[#07070f] flex flex-col">
         <div className="flex-1 overflow-hidden">
           <AIPanel
             suggestions={aiSuggestions}
@@ -459,7 +483,7 @@ function EditorContent() {
 
 export default function EditorPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen"><RefreshCw className="w-6 h-6 animate-spin text-brand-400" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#07070f]"><RefreshCw className="w-6 h-6 animate-spin text-[#60a5fa]" /></div>}>
       <EditorContent />
     </Suspense>
   );

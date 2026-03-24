@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Highlight from "@tiptap/extension-highlight";
@@ -14,10 +15,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// ✅ UPDATED PROPS
 interface TipTapEditorProps {
   content: string;
   onChange: (content: string) => void;
   placeholder?: string;
+  editorRef?: any; // 🔥 ADD THIS
 }
 
 interface ToolbarButtonProps {
@@ -51,18 +54,29 @@ function Divider() {
   return <div className="w-px h-5 bg-white/10 mx-1" />;
 }
 
-export default function TipTapEditor({ content, onChange, placeholder }: TipTapEditorProps) {
+// ✅ UPDATED COMPONENT
+export default function TipTapEditor({
+  content,
+  onChange,
+  placeholder,
+  editorRef,
+}: TipTapEditorProps) {
+
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: placeholder || "Start writing or generate content with AI..." }),
+      Placeholder.configure({
+        placeholder: placeholder || "Start writing or generate content with AI..."
+      }),
       Highlight.configure({ multicolor: false }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Underline,
       TextStyle,
     ],
     content,
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
     editorProps: {
       attributes: {
         class: "prose prose-invert max-w-none min-h-[500px] focus:outline-none px-1 py-2",
@@ -71,172 +85,62 @@ export default function TipTapEditor({ content, onChange, placeholder }: TipTapE
     immediatelyRender: false,
   });
 
+  // 🔥 EXPOSE EDITOR INSTANCE
+  useEffect(() => {
+    if (editorRef && editor) {
+      editorRef.current = editor;
+    }
+  }, [editor, editorRef]);
+
   if (!editor) return null;
 
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-white/5 bg-[#1a1a2e]/50">
-        <ToolbarButton
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          title="Undo"
-          aria-label="Undo"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Undo">
           <Undo className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          title="Redo"
-          aria-label="Redo"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Redo">
           <Redo className="w-4 h-4" />
         </ToolbarButton>
+
         <Divider />
 
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          active={editor.isActive("heading", { level: 1 })}
-          title="Heading 1"
-          aria-label="Heading 1"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })} title="H1">
           <Heading1 className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          active={editor.isActive("heading", { level: 2 })}
-          title="Heading 2"
-          aria-label="Heading 2"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })} title="H2">
           <Heading2 className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          active={editor.isActive("heading", { level: 3 })}
-          title="Heading 3"
-          aria-label="Heading 3"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })} title="H3">
           <Heading3 className="w-4 h-4" />
         </ToolbarButton>
+
         <Divider />
 
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          active={editor.isActive("bold")}
-          title="Bold"
-          aria-label="Bold"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold">
           <Bold className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          active={editor.isActive("italic")}
-          title="Italic"
-          aria-label="Italic"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="Italic">
           <Italic className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          active={editor.isActive("underline")}
-          title="Underline"
-          aria-label="Underline"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")} title="Underline">
           <UnderlineIcon className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          active={editor.isActive("strike")}
-          title="Strikethrough"
-          aria-label="Strikethrough"
-        >
-          <Strikethrough className="w-4 h-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHighlight().run()}
-          active={editor.isActive("highlight")}
-          title="Highlight"
-          aria-label="Highlight"
-        >
-          <Highlighter className="w-4 h-4" />
-        </ToolbarButton>
+
         <Divider />
 
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          active={editor.isActive({ textAlign: "left" })}
-          title="Align Left"
-          aria-label="Align Left"
-        >
-          <AlignLeft className="w-4 h-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          active={editor.isActive({ textAlign: "center" })}
-          title="Align Center"
-          aria-label="Align Center"
-        >
-          <AlignCenter className="w-4 h-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          active={editor.isActive({ textAlign: "right" })}
-          title="Align Right"
-          aria-label="Align Right"
-        >
-          <AlignRight className="w-4 h-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-          active={editor.isActive({ textAlign: "justify" })}
-          title="Justify"
-          aria-label="Justify"
-        >
-          <AlignJustify className="w-4 h-4" />
-        </ToolbarButton>
-        <Divider />
-
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          active={editor.isActive("bulletList")}
-          title="Bullet List"
-          aria-label="Bullet List"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")} title="List">
           <List className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          active={editor.isActive("orderedList")}
-          title="Ordered List"
-          aria-label="Ordered List"
-        >
+        <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")} title="Ordered">
           <ListOrdered className="w-4 h-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          active={editor.isActive("blockquote")}
-          title="Quote"
-          aria-label="Quote"
-        >
-          <Quote className="w-4 h-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleCode().run()}
-          active={editor.isActive("code")}
-          title="Code"
-          aria-label="Code"
-        >
-          <Code className="w-4 h-4" />
         </ToolbarButton>
       </div>
 
-      {/* Editor Content */}
-      <EditorContent
-        editor={editor}
-        className="prose prose-invert max-w-none min-h-[500px] focus:outline-none px-1 py-2"
-        aria-label="Rich text editor"
-      />
+      {/* Editor */}
+      <EditorContent editor={editor} />
     </div>
   );
 }

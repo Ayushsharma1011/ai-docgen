@@ -38,40 +38,41 @@ export default function AIPanel({ suggestions, selectedText, onRewrite }: AIPane
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-white/5">
+      <div className="p-4 border-b border-white/7">
         <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-brand-400" />
-          <span className="font-semibold text-sm">AI Assistant</span>
+          <Sparkles className="w-4 h-4 text-[#60a5fa]" />
+          <span className="font-bold text-sm">AI Assistant</span>
         </div>
-        <p className="text-xs text-white/40">Select text to use AI actions</p>
+        <p className="text-xs text-white/35">Select text to use AI actions</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {/* Selected text indicator */}
         {selectedText && (
-          <div className="glass rounded-xl p-3 border border-brand-500/20">
-            <p className="text-xs text-brand-400 mb-1">Selected text:</p>
-            <p className="text-xs text-white/70 line-clamp-3">{selectedText}</p>
+          <div className="rounded-xl p-3 border border-blue-500/20" style={{ background: "rgba(37,99,235,0.06)" }}>
+            <p className="text-xs text-[#60a5fa] mb-1 font-medium">Selected text:</p>
+            <p className="text-xs text-white/60 line-clamp-3">{selectedText}</p>
           </div>
         )}
 
         {/* AI Actions */}
         <div>
-          <p className="text-xs text-white/40 mb-2 px-1">AI Actions</p>
+          <p className="text-xs text-white/35 mb-2 px-1 font-medium">AI Actions</p>
           <div className="space-y-1">
             {AI_ACTIONS.map((action) => (
               <button
                 key={action.id}
                 onClick={() => handleAction(action.id)}
                 disabled={loading !== null || !selectedText}
-                className="w-full text-left px-3 py-2.5 rounded-xl glass border border-white/5 hover:border-brand-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed group"
+                className="w-full text-left px-3 py-2.5 rounded-xl border border-white/7 hover:border-blue-500/25 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed group"
+                style={{ background: "rgba(18,18,28,0.7)" }}
                 aria-label={action.label}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{action.label}</span>
-                  {loading === action.id && <RefreshCw className="w-3 h-3 animate-spin text-brand-400" />}
+                  {loading === action.id && <RefreshCw className="w-3 h-3 animate-spin text-[#60a5fa]" />}
                 </div>
-                <p className="text-xs text-white/40 mt-0.5">{action.desc}</p>
+                <p className="text-xs text-white/35 mt-0.5">{action.desc}</p>
               </button>
             ))}
           </div>
@@ -82,7 +83,7 @@ export default function AIPanel({ suggestions, selectedText, onRewrite }: AIPane
           <div>
             <button
               onClick={() => setShowSuggestions(!showSuggestions)}
-              className="flex items-center justify-between w-full text-xs text-white/40 mb-2 px-1"
+              className="flex items-center justify-between w-full text-xs text-white/35 mb-2 px-1 font-medium"
               aria-label="Toggle AI suggestions"
             >
               <span className="flex items-center gap-1">
@@ -101,7 +102,8 @@ export default function AIPanel({ suggestions, selectedText, onRewrite }: AIPane
                   {suggestions.map((s, i) => (
                     <div
                       key={i}
-                      className="glass rounded-xl p-3 border border-white/5 text-xs text-white/70 leading-relaxed"
+                      className="rounded-xl p-3 border border-white/7 text-xs text-white/60 leading-relaxed"
+                      style={{ background: "rgba(18,18,28,0.7)" }}
                       role="listitem"
                     >
                       {s}

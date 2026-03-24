@@ -55,8 +55,8 @@ export default function Sidebar() {
   const SidebarContent = (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className={`flex items-center gap-2 p-4 mb-4 ${collapsed ? "justify-center" : ""}`}>
-        <div className="w-9 h-9 rounded-lg btn-glow flex items-center justify-center flex-shrink-0">
+      <div className={`flex items-center gap-2.5 p-4 mb-4 ${collapsed ? "justify-center" : ""}`}>
+        <div className="w-9 h-9 rounded-[10px] btn-glow flex items-center justify-center flex-shrink-0">
           <Sparkles className="w-4 h-4 text-white" />
         </div>
         <AnimatePresence>
@@ -65,7 +65,7 @@ export default function Sidebar() {
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
-              className="font-bold text-base whitespace-nowrap overflow-hidden"
+              className="font-extrabold text-base whitespace-nowrap overflow-hidden tracking-tight"
             >
               DocGenius <span className="gradient-text">AI</span>
             </motion.span>
@@ -84,15 +84,15 @@ export default function Sidebar() {
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 relative group ${
                 active
-                  ? "bg-brand-600/20 text-brand-300 border border-brand-500/30"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-[#60a5fa] border border-blue-500/25"
+                  : "text-white/50 hover:text-white hover:bg-white/[0.04]"
               } ${collapsed ? "justify-center" : ""}`}
               aria-current={active ? "page" : undefined}
             >
               {active && (
                 <motion.div
                   layoutId="activeNav"
-                  className="absolute inset-0 rounded-xl bg-brand-600/20 border border-brand-500/30"
+                  className="absolute inset-0 rounded-xl bg-blue-600/15 border border-blue-500/25"
                 />
               )}
               <item.icon className={`w-5 h-5 flex-shrink-0 relative z-10 ${item.premium ? "text-yellow-400" : ""}`} />
@@ -102,7 +102,7 @@ export default function Sidebar() {
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
-                    className="font-medium"
+                    className="font-medium text-sm"
                   >
                     {item.label}
                   </motion.span>
@@ -115,28 +115,28 @@ export default function Sidebar() {
 
       {/* Tokens */}
       {!collapsed && tokens !== null && (
-        <div className="mx-2 mb-3 glass rounded-xl p-3 border border-white/5">
+        <div className="mx-2 mb-3 glass rounded-xl p-3 border border-white/7">
           <div className="flex items-center gap-2 mb-2">
             <Coins className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs font-semibold text-white/70">Token Balance</span>
+            <span className="text-xs font-semibold text-white/60">Token Balance</span>
           </div>
-          <div className="text-2xl font-black text-white mb-1">{tokens}</div>
-          <Link href="/premium" className="text-xs text-brand-400 hover:text-brand-300 transition-colors">
+          <div className="text-2xl font-extrabold text-white mb-1">{tokens}</div>
+          <Link href="/premium" className="text-xs text-[#60a5fa] hover:text-[#93c5fd] transition-colors font-medium">
             Get more tokens →
           </Link>
         </div>
       )}
 
       {/* User & logout */}
-      <div className={`p-2 border-t border-white/5 ${collapsed ? "flex justify-center" : ""}`}>
+      <div className={`p-2 border-t border-white/7 ${collapsed ? "flex justify-center" : ""}`}>
         {!collapsed && userEmail && (
           <div className="px-3 py-2 mb-2">
-            <p className="text-xs text-white/40 truncate">{userEmail}</p>
+            <p className="text-xs text-white/35 truncate">{userEmail}</p>
           </div>
         )}
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-2 text-white/50 hover:text-red-400 transition-colors px-3 py-2 rounded-lg hover:bg-red-500/10 w-full ${collapsed ? "justify-center" : ""}`}
+          className={`flex items-center gap-2 text-white/45 hover:text-red-400 transition-colors px-3 py-2 rounded-lg hover:bg-red-500/10 w-full ${collapsed ? "justify-center" : ""}`}
         >
           <LogOut className="w-4 h-4" />
           {!collapsed && <span className="text-sm">Sign Out</span>}
@@ -175,7 +175,7 @@ export default function Sidebar() {
             initial={{ x: -280 }}
             animate={{ x: 0 }}
             exit={{ x: -280 }}
-            className="fixed left-0 top-0 bottom-0 w-64 bg-[#0f0f1a] border-r border-white/5 z-50 md:hidden"
+            className="fixed left-0 top-0 bottom-0 w-64 bg-[#07070f] border-r border-white/7 z-50 md:hidden"
           >
             {SidebarContent}
           </motion.aside>
@@ -186,15 +186,15 @@ export default function Sidebar() {
       <motion.aside
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="hidden md:flex flex-col bg-[#0f0f1a] border-r border-white/5 h-screen sticky top-0 overflow-hidden"
+        className="hidden md:flex flex-col bg-[#07070f] border-r border-white/7 h-screen sticky top-0 overflow-hidden"
       >
         {SidebarContent}
         {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-6 h-6 rounded-full bg-[#1a1a2e] border border-white/10 flex items-center justify-center z-50 hover:border-brand-500/40 transition-colors"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-6 h-6 rounded-full bg-[#12121c] border border-white/10 flex items-center justify-center z-50 hover:border-blue-500/40 transition-colors"
         >
-          {collapsed ? <ChevronRight className="w-3 h-3 text-white/60" /> : <ChevronLeft className="w-3 h-3 text-white/60" />}
+          {collapsed ? <ChevronRight className="w-3 h-3 text-white/50" /> : <ChevronLeft className="w-3 h-3 text-white/50" />}
         </button>
       </motion.aside>
     </>

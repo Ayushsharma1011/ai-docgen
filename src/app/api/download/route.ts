@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { htmlToText } from "html-to-text";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,10 +18,14 @@ export async function POST(req: NextRequest) {
     // Parse HTML content into structured format for Python service
     const structuredContent = {
       title: topic || "Document",
-      sections: [{ heading: "Content", body: content }],
+      sections: [
+        {
+          heading: "Content",
+          body: content, // 🔥 SEND RAW HTML
+        },
+      ],
       docType,
     };
-
     const res = await fetch(`${pythonUrl}/generate/${docType}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

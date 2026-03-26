@@ -17,7 +17,7 @@ cp .env.example .env.local
 # - NEXT_PUBLIC_SUPABASE_URL
 # - NEXT_PUBLIC_SUPABASE_ANON_KEY
 # - SUPABASE_SERVICE_ROLE_KEY
-# - OPENAI_API_KEY
+# - OPENAI_API_KEY or OPENROUTER_API_KEY
 # - PYTHON_SERVICE_URL (default: http://localhost:8000)
 ```
 
@@ -122,6 +122,7 @@ ai-docgen/
 - **Voice input** (Web Speech API)
 - **12 templates**: Business, Academic, Career, Finance, HR, Marketing
 - **Supabase auth**: Email + Google OAuth
+- **AI provider flexibility**: OpenAI or OpenRouter via env vars
 - **Token system**: Free (10), Pro (100), Premium (unlimited)
 - **Version history** and document management
 - **Share links** (coming soon / UI ready)

@@ -1,18 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  LayoutDashboard, FilePlus, BookTemplate, History,
-  Crown, LogOut, Sparkles, ChevronLeft, ChevronRight,
-  Coins, Menu, X
+  ArrowLeft,
+  BookTemplate,
+  ChevronLeft,
+  ChevronRight,
+  Coins,
+  Crown,
+  FilePlus,
+  History,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  House,
+  Sparkles,
+  X,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
-const NAV_ITEMS = [
+const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/editor", icon: FilePlus, label: "Create" },
   { href: "/templates", icon: BookTemplate, label: "Templates" },
@@ -30,18 +41,18 @@ export default function Sidebar() {
 
   useEffect(() => {
     const supabase = createClient();
+
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setUserEmail(user.email ?? "");
-        supabase
-          .from("tokens")
-          .select("balance")
-          .eq("user_id", user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) setTokens(data.balance);
-          });
+      if (!user) {
+        return;
       }
+
+      setUserEmail(user.email ?? "");
+      supabase.from("tokens").select("balance").eq("user_id", user.id).single().then(({ data }) => {
+        if (data) {
+          setTokens(data.balance);
+        }
+      });
     });
   }, []);
 
@@ -52,94 +63,105 @@ export default function Sidebar() {
     router.push("/");
   }
 
-  const SidebarContent = (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className={`flex items-center gap-2.5 p-4 mb-4 ${collapsed ? "justify-center" : ""}`}>
-        <div className="w-9 h-9 rounded-[10px] btn-glow flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-white" />
-        </div>
-        <AnimatePresence>
+  const content = (
+    <div className="flex h-full flex-col">
+      <div className={`border-b border-white/8 px-4 py-5 ${collapsed ? "items-center" : ""}`}>
+        <Link
+          href="/"
+          className={`flex items-center gap-3 rounded-2xl transition-opacity hover:opacity-90 ${collapsed ? "justify-center" : ""}`}
+        >
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_10px_28px_rgba(37,99,235,0.28)]">
+            <Sparkles className="h-5 w-5 text-white" />
+          </div>
           {!collapsed && (
-            <motion.span
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              className="font-extrabold text-base whitespace-nowrap overflow-hidden tracking-tight"
-            >
-              DocGenius <span className="gradient-text">AI</span>
-            </motion.span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">DocGenius AI</p>
+              <p className="text-xs text-white/40">Document workspace</p>
+            </div>
           )}
-        </AnimatePresence>
+        </Link>
+
+        <div className={`mt-4 flex gap-2 ${collapsed ? "justify-center" : ""}`}>
+          <Link
+            href="/"
+            className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm font-medium text-white/75 transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-white ${
+              collapsed ? "justify-center px-2.5" : ""
+            }`}
+            title="Go to homepage"
+          >
+            <House className="h-4 w-4" />
+            {!collapsed && <span>Homepage</span>}
+          </Link>
+
+          {!collapsed && (
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm font-medium text-white/75 transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+              title="Go back"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-2 space-y-1" aria-label="Sidebar Navigation">
-        {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href || pathname.startsWith(item.href + "/");
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 relative group ${
-                active
-                  ? "bg-blue-600/15 text-[#60a5fa] border border-blue-500/25"
-                  : "text-white/50 hover:text-white hover:bg-white/[0.04]"
-              } ${collapsed ? "justify-center" : ""}`}
-              aria-current={active ? "page" : undefined}
-            >
-              {active && (
-                <motion.div
-                  layoutId="activeNav"
-                  className="absolute inset-0 rounded-xl bg-blue-600/15 border border-blue-500/25"
-                />
-              )}
-              <item.icon className={`w-5 h-5 flex-shrink-0 relative z-10 ${item.premium ? "text-yellow-400" : ""}`} />
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className="font-medium text-sm"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
+      <div className="flex-1 px-3 py-4">
+        <nav className="space-y-1.5" aria-label="Sidebar Navigation">
+          {navItems.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={`group relative flex items-center gap-3 rounded-2xl px-3 py-3 text-sm transition-all ${
+                  active
+                    ? "border border-blue-500/25 bg-blue-500/12 text-blue-100"
+                    : "border border-transparent text-white/55 hover:border-white/8 hover:bg-white/[0.04] hover:text-white"
+                } ${collapsed ? "justify-center" : ""}`}
+                aria-current={active ? "page" : undefined}
+              >
+                {active && <motion.div layoutId="sidebarActive" className="absolute inset-0 rounded-2xl border border-blue-500/25 bg-blue-500/12" />}
+                <item.icon className={`relative z-10 h-5 w-5 ${item.premium ? "text-amber-300" : ""}`} />
+                {!collapsed && <span className="relative z-10 font-medium">{item.label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {!collapsed && tokens !== null && (
+          <div className="mt-5 rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(37,99,235,0.16),rgba(12,18,34,0.6))] p-4">
+            <div className="flex items-center gap-2">
+              <Coins className="h-4 w-4 text-amber-300" />
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">Tokens</span>
+            </div>
+            <div className="mt-3 text-3xl font-semibold">{tokens}</div>
+            <Link href="/premium" className="mt-3 inline-flex text-sm font-medium text-blue-200 hover:text-blue-100">
+              Upgrade or buy more
             </Link>
-          );
-        })}
-      </nav>
-
-      {/* Tokens */}
-      {!collapsed && tokens !== null && (
-        <div className="mx-2 mb-3 glass rounded-xl p-3 border border-white/7">
-          <div className="flex items-center gap-2 mb-2">
-            <Coins className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs font-semibold text-white/60">Token Balance</span>
           </div>
-          <div className="text-2xl font-extrabold text-white mb-1">{tokens}</div>
-          <Link href="/premium" className="text-xs text-[#60a5fa] hover:text-[#93c5fd] transition-colors font-medium">
-            Get more tokens →
-          </Link>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* User & logout */}
-      <div className={`p-2 border-t border-white/7 ${collapsed ? "flex justify-center" : ""}`}>
-        {!collapsed && userEmail && (
-          <div className="px-3 py-2 mb-2">
-            <p className="text-xs text-white/35 truncate">{userEmail}</p>
+      <div className={`border-t border-white/8 px-3 py-4 ${collapsed ? "flex justify-center" : ""}`}>
+        {!collapsed && (
+          <div className="mb-3 rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-3">
+            <p className="truncate text-sm font-medium text-white/85">{userEmail || "Signed in user"}</p>
+            <p className="mt-1 text-xs text-white/40">Account active</p>
           </div>
         )}
         <button
+          type="button"
           onClick={handleLogout}
-          className={`flex items-center gap-2 text-white/45 hover:text-red-400 transition-colors px-3 py-2 rounded-lg hover:bg-red-500/10 w-full ${collapsed ? "justify-center" : ""}`}
+          className={`inline-flex items-center gap-2 rounded-2xl border border-red-500/18 bg-[linear-gradient(180deg,rgba(127,29,29,0.5),rgba(127,29,29,0.26))] px-3 py-2.5 text-sm font-medium text-red-100 shadow-[0_12px_24px_rgba(127,29,29,0.2)] transition-colors hover:bg-[linear-gradient(180deg,rgba(153,27,27,0.6),rgba(127,29,29,0.34))] ${
+            collapsed ? "justify-center" : "w-full"
+          }`}
         >
-          <LogOut className="w-4 h-4" />
-          {!collapsed && <span className="text-sm">Sign Out</span>}
+          <LogOut className="h-4 w-4" />
+          {!collapsed && <span>Logout</span>}
         </button>
       </div>
     </div>
@@ -147,54 +169,48 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile toggle */}
       <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 glass p-2 rounded-lg border border-white/10"
+        type="button"
+        onClick={() => setMobileOpen((value) => !value)}
+        className="fixed left-4 top-4 z-50 rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(15,22,39,0.96),rgba(10,15,27,0.92))] p-2.5 text-white shadow-[0_14px_40px_rgba(0,0,0,0.35)] backdrop-blur md:hidden"
       >
-        {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
 
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-40 md:hidden"
-            onClick={() => setMobileOpen(false)}
-          />
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px] md:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.aside
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              className="fixed left-0 top-0 z-50 h-full w-[280px] border-r border-white/10 bg-[#08101e] shadow-[0_24px_70px_rgba(0,0,0,0.45)] md:hidden"
+            >
+              {content}
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
 
-      {/* Mobile sidebar */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.aside
-            initial={{ x: -280 }}
-            animate={{ x: 0 }}
-            exit={{ x: -280 }}
-            className="fixed left-0 top-0 bottom-0 w-64 bg-[#07070f] border-r border-white/7 z-50 md:hidden"
-          >
-            {SidebarContent}
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop sidebar */}
       <motion.aside
-        animate={{ width: collapsed ? 72 : 240 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="hidden md:flex flex-col bg-[#07070f] border-r border-white/7 h-screen sticky top-0 overflow-hidden"
+        animate={{ width: collapsed ? 88 : 272 }}
+        transition={{ duration: 0.28, ease: "easeInOut" }}
+        className="relative hidden h-screen flex-col border-r border-white/8 bg-[linear-gradient(180deg,#09111f,#07070f)] md:flex"
       >
-        {SidebarContent}
-        {/* Collapse toggle */}
+        {content}
         <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-6 h-6 rounded-full bg-[#12121c] border border-white/10 flex items-center justify-center z-50 hover:border-blue-500/40 transition-colors"
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          className="absolute -right-3 top-8 flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-[#111827] text-white/60 transition-colors hover:border-white/20 hover:text-white"
         >
-          {collapsed ? <ChevronRight className="w-3 h-3 text-white/50" /> : <ChevronLeft className="w-3 h-3 text-white/50" />}
+          {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>
       </motion.aside>
     </>

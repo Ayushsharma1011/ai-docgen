@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Check, Zap, Star, Shield, Coins } from "lucide-react";
+import { toast } from "sonner";
+import { Check, Coins, Crown, Shield, Star, Zap } from "lucide-react";
+import { requestJson } from "@/lib/client-api";
 
 const PLANS = [
   {
@@ -13,14 +16,15 @@ const PLANS = [
     popular: false,
     icon: Zap,
     features: [
-      "10 AI generations/month",
-      "PDF & Word (.docx) only",
-      "5 basic templates",
+      "10 AI generations per month",
+      "PDF and Word exports",
+      "Core templates",
       "Rich text editor",
-      "Document history (7 days)",
+      "7-day document history",
     ],
-    disabled: ["PowerPoint generation", "Excel generation", "ATS Optimizer", "AI Slides Designer", "Priority AI", "Unlimited history"],
-    cta: "Current Plan",
+    disabled: ["PowerPoint generation", "Excel generation", "Share links", "Priority AI"],
+    cta: "Current plan",
+    action: { type: "plan" as const, plan: "free" as const },
   },
   {
     name: "Pro",
@@ -31,17 +35,17 @@ const PLANS = [
     popular: true,
     icon: Star,
     features: [
-      "100 AI generations/month",
-      "All 4 formats (PDF, Word, PPT, Excel)",
-      "All 12 templates",
-      "Rich text editor + AI actions",
-      "Full document history",
-      "AI Smart Suggestions",
-      "Share links",
+      "100 AI generations per month",
+      "All 4 formats",
+      "All templates",
+      "AI rewrite actions",
       "Version history",
+      "Share links",
+      "Better export workflow",
     ],
     disabled: [],
     cta: "Upgrade to Pro",
+    action: { type: "plan" as const, plan: "pro" as const },
   },
   {
     name: "Premium",
@@ -54,17 +58,15 @@ const PLANS = [
     features: [
       "Unlimited generations",
       "All 4 formats",
-      "All templates + custom",
-      "AI Slides Designer",
-      "ATS Resume Optimizer",
-      "Excel Smart Charts",
-      "Priority GPT-4o",
+      "Advanced templates",
+      "Priority AI processing",
       "Custom branding",
-      "API access",
+      "API-ready architecture",
       "Dedicated support",
     ],
     disabled: [],
     cta: "Go Premium",
+    action: { type: "plan" as const, plan: "premium" as const },
   },
 ];
 
@@ -75,138 +77,145 @@ const TOKEN_PACKS = [
 ];
 
 export default function PremiumPage() {
+  const [loadingKey, setLoadingKey] = useState<string | null>(null);
+
+  async function startCheckout(payload: { type: "tokens" | "plan"; amount?: number; plan?: "free" | "pro" | "premium" }) {
+    const key = `${payload.type}-${payload.plan || payload.amount}`;
+    setLoadingKey(key);
+
+    try {
+      const data = await requestJson<{ message?: string }>("/api/stripe/checkout", {
+        method: "POST",
+        json: payload,
+      });
+
+      toast.info(data.message || "Checkout is not configured yet.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to start checkout.";
+      toast.error(message);
+    } finally {
+      setLoadingKey(null);
+    }
+  }
+
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-        <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm text-yellow-400 mb-6 border border-yellow-500/25 font-medium"
-          style={{ background: "rgba(234,179,8,0.08)" }}
-        >
-          <Crown className="w-4 h-4" /> Upgrade your plan
+    <div className="mx-auto max-w-7xl px-6 py-8 md:px-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-300">
+          <Crown className="h-4 w-4" /> Upgrade your workspace
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">Choose Your Plan</h1>
-        <p className="text-white/45 text-lg">Unlock the full power of AI document generation</p>
+        <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">Choose the right plan for your team</h1>
+        <p className="mx-auto mt-3 max-w-2xl text-lg text-white/45">
+          Unlock better exports, more AI capacity, and collaboration-friendly workflows as your document volume grows.
+        </p>
       </motion.div>
 
-      {/* Plans */}
-      <div className="grid md:grid-cols-3 gap-0 mb-16">
-        {PLANS.map((plan, i) => (
+      <div className="mb-16 grid gap-5 lg:grid-cols-3">
+        {PLANS.map((plan, index) => (
           <motion.div
             key={plan.name}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="relative"
+            transition={{ delay: index * 0.08 }}
+            className={`relative rounded-[28px] border p-8 ${
+              plan.popular
+                ? "border-blue-500/45 bg-[#10172b] shadow-[0_0_30px_rgba(37,99,235,0.25)]"
+                : "border-white/10 bg-white/[0.03]"
+            }`}
           >
             {plan.popular && (
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                <span className="bg-[#2563eb] text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase">
-                  MOST POPULAR
-                </span>
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-500 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white">
+                Most Popular
               </div>
             )}
-            <div
-              className={`rounded-[22px] p-8 border flex flex-col h-full transition-all duration-200 hover:-translate-y-1.5 ${
-                plan.popular
-                  ? "border-2 border-blue-500/50 shadow-glow scale-y-[1.025] z-10"
-                  : "border-white/7"
-              }`}
-              style={{
-                background: plan.popular ? "#13132b" : "rgba(18,18,28,0.85)",
-              }}
-            >
-              <div
-                className="w-11 h-11 rounded-[13px] flex items-center justify-center mb-5"
-                style={{ background: plan.grad }}
-              >
-                <plan.icon style={{ width: 20, height: 20, color: "#fff" }} />
-              </div>
 
-              <div className="text-[26px] font-extrabold mb-1">{plan.name}</div>
-              <div className="mb-1">
-                <span className="text-[52px] font-extrabold leading-none">{plan.price}</span>
-                <span className="text-white/35 text-sm">{plan.period}</span>
-              </div>
-              <div className="flex items-center gap-1 text-xs text-[#60a5fa] font-bold mb-6">
-                <Coins className="w-3.5 h-3.5" />
-                {plan.tokens}
-              </div>
-
-              <ul className="space-y-2.5 mb-6 flex-1">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2.5 text-sm text-white/65">
-                    <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(16,185,129,0.12)" }}>
-                      <Check style={{ width: 10, height: 10, color: "#34d399" }} />
-                    </div>
-                    {f}
-                  </li>
-                ))}
-                {plan.disabled.map((f) => (
-                  <li key={f} className="flex items-center gap-2.5 text-sm text-white/20 line-through">
-                    <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.04)" }}>
-                      <Check style={{ width: 10, height: 10, color: "rgba(255,255,255,0.15)" }} />
-                    </div>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                className={`w-full py-3.5 rounded-[13px] font-bold text-sm transition-all duration-200 ${
-                  plan.popular
-                    ? "bg-white text-black hover:opacity-90"
-                    : plan.name === "Free"
-                    ? "border border-white/7 text-white/35 cursor-default"
-                    : "border border-white/10 text-white hover:bg-white/[0.06]"
-                }`}
-                style={!plan.popular && plan.name !== "Free" ? { background: "rgba(255,255,255,0.04)" } : plan.name === "Free" ? { background: "rgba(255,255,255,0.03)" } : {}}
-                disabled={plan.name === "Free"}
-              >
-                {plan.cta}
-              </button>
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: plan.grad }}>
+              <plan.icon className="h-5 w-5 text-white" />
             </div>
+
+            <h2 className="text-2xl font-semibold">{plan.name}</h2>
+            <div className="mt-2">
+              <span className="text-5xl font-semibold">{plan.price}</span>
+              <span className="ml-1 text-sm text-white/35">{plan.period}</span>
+            </div>
+            <div className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-blue-300">
+              <Coins className="h-4 w-4" />
+              {plan.tokens}
+            </div>
+
+            <ul className="mt-6 space-y-3">
+              {plan.features.map((feature) => (
+                <li key={feature} className="flex items-start gap-2.5 text-sm text-white/72">
+                  <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
+                    <Check className="h-3 w-3 text-emerald-300" />
+                  </span>
+                  {feature}
+                </li>
+              ))}
+              {plan.disabled.map((feature) => (
+                <li key={feature} className="flex items-start gap-2.5 text-sm text-white/28 line-through">
+                  <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-white/[0.05]">
+                    <Check className="h-3 w-3 text-white/25" />
+                  </span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (plan.action.plan === "free") {
+                  toast.info("You are already on the free plan.");
+                  return;
+                }
+                void startCheckout(plan.action);
+              }}
+              className={`mt-8 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-opacity ${
+                plan.popular ? "bg-white text-slate-950 hover:opacity-90" : "border border-white/12 bg-white/[0.04] text-white hover:bg-white/[0.07]"
+              }`}
+              disabled={loadingKey === `plan-${plan.action.plan}`}
+            >
+              {loadingKey === `plan-${plan.action.plan}` ? "Preparing checkout..." : plan.cta}
+            </button>
           </motion.div>
         ))}
       </div>
 
-      {/* Token packs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="max-w-2xl mx-auto"
-      >
-        <h2 className="text-2xl font-extrabold text-center mb-6 tracking-tight">Just Need More Tokens?</h2>
-        <div className="grid grid-cols-3 gap-4">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mx-auto max-w-3xl">
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight">Need a one-time token top-up?</h2>
+          <p className="mt-2 text-white/45">Useful when you only need extra generations without changing plans.</p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
           {TOKEN_PACKS.map((pack) => (
             <div
               key={pack.label}
-              className={`rounded-2xl p-5 text-center border transition-all duration-200 hover:scale-105 hover:-translate-y-1 cursor-pointer ${
-                pack.popular ? "border-blue-500/35 shadow-glow" : "border-white/7"
-              }`}
-              style={{ background: "rgba(18,18,28,0.85)" }}
+              className={`rounded-[24px] border p-5 text-center ${pack.popular ? "border-blue-500/35 bg-blue-500/[0.06]" : "border-white/10 bg-white/[0.03]"}`}
             >
-              {pack.popular && (
-                <div className="text-xs text-[#60a5fa] font-bold mb-2">BEST VALUE</div>
-              )}
-              <div className="flex items-center justify-center gap-1 mb-2">
-                <Coins className="w-4 h-4 text-yellow-400" />
-                <span className="text-2xl font-extrabold">{pack.amount}</span>
+              {pack.popular && <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-300">Best value</p>}
+              <div className="flex items-center justify-center gap-2">
+                <Coins className="h-4 w-4 text-amber-300" />
+                <span className="text-3xl font-semibold">{pack.amount}</span>
               </div>
-              <div className="text-sm text-white/42 mb-3">{pack.label}</div>
-              <div className="text-2xl font-extrabold text-[#60a5fa] mb-3">{pack.price}</div>
+              <p className="mt-2 text-sm text-white/45">{pack.label}</p>
+              <p className="mt-3 text-2xl font-semibold text-blue-300">{pack.price}</p>
               <button
-                className="w-full py-2 rounded-lg text-sm font-bold border border-white/10 hover:border-blue-500/35 transition-colors"
-                style={{ background: "rgba(255,255,255,0.04)" }}
+                type="button"
+                onClick={() => void startCheckout({ type: "tokens", amount: pack.amount })}
+                className="mt-4 w-full rounded-2xl border border-white/12 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-white/[0.08]"
+                disabled={loadingKey === `tokens-${pack.amount}`}
               >
-                Buy Tokens
+                {loadingKey === `tokens-${pack.amount}` ? "Preparing..." : "Buy tokens"}
               </button>
             </div>
           ))}
         </div>
-        <p className="text-center text-xs text-white/25 mt-4">
-          <Shield className="inline w-3 h-3 mr-1" />
-          Secure payment powered by Stripe. Cancel anytime.
+
+        <p className="mt-4 text-center text-xs text-white/28">
+          <Shield className="mr-1 inline h-3 w-3" />
+          Stripe checkout can be enabled later by adding `STRIPE_SECRET_KEY` and the webhook configuration.
         </p>
       </motion.div>
     </div>

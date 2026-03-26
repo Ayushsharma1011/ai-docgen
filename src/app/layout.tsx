@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import "./globals.css";
+import "./base.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "AI Document Generator — Create Professional Documents with AI",
+  title: "DocGenius AI | Create Professional Documents with AI",
   description:
-    "Generate high-quality PDFs, Word documents, PowerPoint presentations, and Excel spreadsheets instantly using AI. The most powerful AI document platform for professionals.",
+    "Generate high-quality PDFs, Word documents, PowerPoint presentations, and Excel spreadsheets instantly using AI.",
   keywords: "AI document generator, PDF generator, Word document AI, PowerPoint AI, Excel generator",
   openGraph: {
-    title: "AI Document Generator",
+    title: "DocGenius AI",
     description: "Create professional documents instantly with AI",
     type: "website",
   },
@@ -21,27 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body suppressHydrationWarning>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} bg-[#07070f] text-slate-50`} suppressHydrationWarning>
         {children}
-        <Toaster
-          richColors
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: "#1a1a2e",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "#e8e8f0",
-            },
-          }}
-        />
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

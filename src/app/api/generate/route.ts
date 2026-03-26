@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateStructuredContent } from "@/lib/openai";
+import { AIRequestError, generateStructuredContent } from "@/lib/openai";
 import { DocumentType, DocumentTone } from "@/types";
 import { TOKEN_COSTS } from "@/lib/utils";
 
@@ -45,6 +45,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ content, tokensRemaining: tokenData.balance - cost });
   } catch (err: unknown) {
+    if (err instanceof AIRequestError) {
+      return NextResponse.json(
+        { error: err.message },
+        {
+          status: err.status,
+          headers: err.retryAfter ? { "Retry-After": err.retryAfter.toString() } : undefined,
+        },
+      );
+    }
+
     console.error("Generate error:", err);
     const message = err instanceof Error ? err.message : "Generation failed";
     return NextResponse.json({ error: message }, { status: 500 });

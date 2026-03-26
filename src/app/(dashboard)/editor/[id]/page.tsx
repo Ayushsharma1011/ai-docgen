@@ -7,9 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEditorStore } from "@/lib/store";
 import { RefreshCw } from "lucide-react";
 
-// The editor content is already handled in EditorPage component (src/app/(dashboard)/editor/page.tsx).
-// We'll wrap EditorContent inside [id]/page.tsx to load existing data first.
-import EditorContentComponent from "@/app/(dashboard)/editor/page";
+import { EditorWorkspace } from "@/app/(dashboard)/editor/page";
 
 export default function EditDocumentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -63,6 +61,5 @@ export default function EditDocumentPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  // We reuse the EditorPage which renders EditorContent and accesses the zustand store we just populated.
-  return <EditorContentComponent />;
+  return <EditorWorkspace preserveState />;
 }

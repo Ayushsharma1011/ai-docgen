@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
  * Handles Stripe webhook events (payment success → top up tokens / update plan).
  */
 export async function handleWebhook(req: NextRequest) {
-  const body = await req.text();
+  await req.text();
   const sig = req.headers.get("stripe-signature");
 
   if (!sig) return NextResponse.json({ error: "No signature" }, { status: 400 });

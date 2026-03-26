@@ -62,14 +62,13 @@ export default function TemplatesPage() {
   const filtered = filter === "All" ? templates : templates.filter((t) => t.category === filter);
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-extrabold mb-1 tracking-tight">Templates</h1>
-        <p className="text-white/45">Start from a pre-built template. Just fill in your details.</p>
+    <div className="mx-auto max-w-7xl p-6 md:p-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 overflow-hidden rounded-[30px] border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.16),transparent_28%),linear-gradient(135deg,#101827_0%,#0b1220_55%,#07070f_100%)] p-6 md:p-8">
+        <h1 className="mb-1 text-3xl font-extrabold tracking-tight">Templates</h1>
+        <p className="max-w-2xl text-white/45">Skip the blank-page feeling with ready-made structures for business docs, academic work, reports, and presentations.</p>
       </motion.div>
 
-      {/* Category filters */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="mb-8 flex flex-wrap gap-2">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -89,11 +88,11 @@ export default function TemplatesPage() {
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="rounded-2xl h-44 shimmer border border-white/7" style={{ background: "rgba(18,18,28,0.7)" }} />
+            <div key={i} className="h-44 animate-pulse rounded-2xl border border-white/7 bg-[linear-gradient(135deg,rgba(18,18,28,0.92),rgba(28,39,63,0.78))]" />
           ))}
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((tpl, i) => {
             const Icon = DOC_ICONS[tpl.doc_type] || FileText;
             const locked = tpl.is_premium && userPlan === "free";
@@ -107,8 +106,7 @@ export default function TemplatesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
                 whileHover={{ scale: locked ? 1 : 1.02, y: locked ? 0 : -4 }}
-                className="rounded-2xl p-5 border border-white/7 relative group transition-all duration-200 hover:border-white/14"
-                style={{ background: "rgba(18,18,28,0.92)" }}
+                className="group relative rounded-[24px] border border-white/7 bg-[linear-gradient(135deg,rgba(18,18,28,0.92),rgba(15,23,38,0.95))] p-5 transition-all duration-200 hover:border-white/14"
               >
                 {locked && (
                   <div className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center z-10 backdrop-blur-[2px]">

@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 // POST /api/documents/[id]/share — generate a shareable link token
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -28,7 +28,8 @@ export async function POST(
       return NextResponse.json({ error: "Failed to generate share link" }, { status: 400 });
     }
 
-    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/share/${data.share_token}`;
+    const shareOrigin = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin;
+    const shareUrl = `${shareOrigin}/share/${data.share_token}`;
     return NextResponse.json({ shareUrl, token: data.share_token });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to share document";

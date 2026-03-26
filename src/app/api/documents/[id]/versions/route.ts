@@ -23,7 +23,7 @@ export async function GET(
 
     const { data: versions, error } = await supabase
       .from("document_versions")
-      .select("id, version_number, created_at")
+      .select("id, content, version_number, created_at")
       .eq("document_id", id)
       .order("version_number", { ascending: false });
 

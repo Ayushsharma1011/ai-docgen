@@ -1,0 +1,73 @@
+.editorSurface :global(.ProseMirror) {
+  outline: none;
+  min-height: 420px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1.25rem;
+  line-height: 1.8;
+  color: rgba(248, 250, 252, 0.94);
+}
+
+.editorSurface :global(.ProseMirror h1) {
+  margin: 1rem 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.editorSurface :global(.ProseMirror h2) {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.editorSurface :global(.ProseMirror h3) {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.editorSurface :global(.ProseMirror p) {
+  margin-bottom: 0.85rem;
+}
+
+.editorSurface :global(.ProseMirror ul),
+.editorSurface :global(.ProseMirror ol) {
+  margin-bottom: 0.85rem;
+  padding-left: 1.5rem;
+}
+
+.editorSurface :global(.ProseMirror li) {
+  margin-bottom: 0.3rem;
+}
+
+.editorSurface :global(.ProseMirror blockquote) {
+  margin: 1rem 0;
+  border-left: 4px solid rgba(96, 165, 250, 0.8);
+  padding-left: 1rem;
+  color: rgba(226, 232, 240, 0.82);
+  font-style: italic;
+}
+
+.editorSurface :global(.ProseMirror code) {
+  border-radius: 0.4rem;
+  background: rgba(37, 99, 235, 0.16);
+  padding: 0.15rem 0.4rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+}
+
+.editorSurface :global(.ProseMirror mark) {
+  border-radius: 0.2rem;
+  background: rgba(251, 191, 36, 0.28);
+  padding: 0 0.15rem;
+}
+
+.editorSurface :global(.ProseMirror p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: rgba(148, 163, 184, 0.7);
+}

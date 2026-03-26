@@ -24,9 +24,9 @@ interface EditorState {
   setIsSaving: (val: boolean) => void;
   setAISuggestions: (suggestions: string[]) => void;
   setShowSuggestionsPanel: (val: boolean) => void;
-  setTopic: (val: string) => void;
-  setInstructions: (val: string) => void;
-  setRequirements: (val: string) => void;
+  setTopic: (val: string | ((current: string) => string)) => void;
+  setInstructions: (val: string | ((current: string) => string)) => void;
+  setRequirements: (val: string | ((current: string) => string)) => void;
   setDocType: (val: DocumentType) => void;
   setTone: (val: DocumentTone) => void;
   resetForm: () => void;
@@ -51,9 +51,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   setIsSaving: (val) => set({ isSaving: val }),
   setAISuggestions: (suggestions) => set({ aiSuggestions: suggestions }),
   setShowSuggestionsPanel: (val) => set({ showSuggestionsPanel: val }),
-  setTopic: (val) => set({ topic: val }),
-  setInstructions: (val) => set({ instructions: val }),
-  setRequirements: (val) => set({ requirements: val }),
+  setTopic: (val) => set((state) => ({ topic: typeof val === "function" ? val(state.topic) : val })),
+  setInstructions: (val) =>
+    set((state) => ({ instructions: typeof val === "function" ? val(state.instructions) : val })),
+  setRequirements: (val) =>
+    set((state) => ({ requirements: typeof val === "function" ? val(state.requirements) : val })),
   setDocType: (val) => set({ docType: val }),
   setTone: (val) => set({ tone: val }),
   resetForm: () =>

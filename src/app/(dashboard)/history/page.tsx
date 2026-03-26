@@ -14,7 +14,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const loadDocs = async () => {
+  async function loadDocs() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -25,11 +25,30 @@ export default function HistoryPage() {
       .order("updated_at", { ascending: false });
     setDocs(data || []);
     setLoading(false);
-  };
+  }
 
   useEffect(() => {
-    loadDocs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    let active = true;
+
+    async function initialLoad() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !active) return;
+      const { data } = await supabase
+        .from("documents")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false });
+      if (!active) return;
+      setDocs(data || []);
+      setLoading(false);
+    }
+
+    void initialLoad();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function handleDelete(id: string) {
@@ -61,16 +80,16 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-extrabold mb-1 tracking-tight">History</h1>
-        <p className="text-white/45">All your generated documents in one place.</p>
+    <div className="mx-auto max-w-7xl p-6 md:p-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 overflow-hidden rounded-[30px] border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.18),transparent_30%),linear-gradient(135deg,#101827_0%,#0b1220_55%,#07070f_100%)] p-6 md:p-8">
+        <h1 className="mb-1 text-3xl font-extrabold tracking-tight">History</h1>
+        <p className="max-w-2xl text-white/45">Review every saved document, duplicate strong drafts, and reopen work without hunting through scattered files.</p>
       </motion.div>
 
       {loading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="rounded-2xl h-20 shimmer border border-white/7" style={{ background: "rgba(18,18,28,0.7)" }} />
+            <div key={i} className="h-20 animate-pulse rounded-2xl border border-white/7 bg-[linear-gradient(135deg,rgba(18,18,28,0.92),rgba(28,39,63,0.78))]" />
           ))}
         </div>
       ) : docs.length === 0 ? (
@@ -87,9 +106,8 @@ export default function HistoryPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
-              className="rounded-2xl border border-white/7 hover:border-white/14 transition-all duration-200 p-4 flex items-center gap-4 group"
-              style={{ background: "rgba(18,18,28,0.92)" }}
-            >
+              className="group flex items-center gap-4 rounded-[24px] border border-white/7 bg-[linear-gradient(135deg,rgba(18,18,28,0.92),rgba(15,23,38,0.95))] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/14"
+              >
               <div className="text-2xl">{DOC_TYPE_ICONS[doc.doc_type]}</div>
 
               <div className="flex-1 min-w-0">
@@ -109,7 +127,7 @@ export default function HistoryPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-2 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
                 <Link
                   href={`/editor/${doc.id}`}
                   className="p-2 rounded-lg border border-white/10 hover:border-blue-500/30 transition-colors"

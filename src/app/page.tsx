@@ -1,435 +1,448 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-  FileText, Presentation, Sheet, File,
-  Sparkles, Zap, Shield, Globe, Download,
-  Star, ArrowRight, Check,
+  ArrowRight,
+  Check,
+  Download,
+  File,
+  FileText,
+  Globe,
+  Presentation,
+  Shield,
+  Sheet,
+  Sparkles,
+  Star,
+  Zap,
 } from "lucide-react";
+import AuthStatus from "@/components/AuthStatus";
 
-/* ─── Data ─── */
-
-const DOC_TYPES = [
-  { icon: File,         label: "PDF Reports",  color: "#ef4444", grad: "linear-gradient(135deg,#ef4444,#f97316)", desc: "Professional reports with rich formatting" },
-  { icon: FileText,     label: "Word Docs",    color: "#3b82f6", grad: "linear-gradient(135deg,#3b82f6,#06b6d4)", desc: "Editable documents with styling" },
-  { icon: Presentation, label: "PowerPoint",   color: "#8b5cf6", grad: "linear-gradient(135deg,#8b5cf6,#a855f7)", desc: "Stunning slide decks" },
-  { icon: Sheet,        label: "Excel Sheets", color: "#10b981", grad: "linear-gradient(135deg,#10b981,#14b8a6)", desc: "Data-rich spreadsheets with charts" },
-];
-
-const FEATURES = [
-  { icon: Sparkles, title: "AI-Powered",         desc: "GPT-4o generates publication-ready content in seconds",   iconBg: "rgba(59,130,246,0.12)",  iconColor: "#60a5fa" },
-  { icon: Zap,      title: "Instant Generation",  desc: "From idea to download in under 30 seconds",               iconBg: "rgba(234,179,8,0.12)",   iconColor: "#facc15" },
-  { icon: Shield,   title: "ATS Optimizer",       desc: "Resume scoring and keyword optimization built-in",        iconBg: "rgba(16,185,129,0.12)",  iconColor: "#34d399" },
-  { icon: Globe,    title: "12+ Templates",        desc: "Business, academic, career, and creative templates",      iconBg: "rgba(139,92,246,0.12)",  iconColor: "#a78bfa" },
-  { icon: Download, title: "4 File Formats",       desc: "PDF, Word, PowerPoint, and Excel — all from one prompt", iconBg: "rgba(236,72,153,0.12)",  iconColor: "#f472b6" },
-  { icon: Star,     title: "Version History",      desc: "Never lose work — restore any previous version",         iconBg: "rgba(249,115,22,0.12)",  iconColor: "#fb923c" },
-];
-
-const PLANS = [
+const documentTypes = [
   {
-    name: "Free",    price: "$0",  tokens: "10 tokens/mo",
-    grad: "linear-gradient(135deg,#64748b,#475569)",
-    features: ["10 generations/month","PDF & Word only","5 templates","Basic editor"],
-    cta: "Get Started", popular: false,
+    icon: File,
+    title: "PDF reports",
+    description: "Executive-ready reports with clean structure and strong formatting.",
+    gradient: "from-rose-500 to-orange-400",
   },
   {
-    name: "Pro",     price: "$19", tokens: "100 tokens/mo",
-    grad: "linear-gradient(135deg,#2563eb,#7c3aed)",
-    features: ["100 generations/month","All 4 formats","All templates","Advanced editor","Version history","AI suggestions"],
-    cta: "Start Pro", popular: true,
+    icon: FileText,
+    title: "Word docs",
+    description: "Editable proposals, resumes, letters, and polished internal docs.",
+    gradient: "from-sky-500 to-cyan-400",
   },
   {
-    name: "Premium", price: "$49", tokens: "Unlimited",
-    grad: "linear-gradient(135deg,#f59e0b,#f97316)",
-    features: ["Unlimited generations","All 4 formats","Custom templates","AI Slides Designer","ATS Optimizer","Excel Charts","Priority AI","Share links"],
-    cta: "Go Premium", popular: false,
+    icon: Presentation,
+    title: "Slide decks",
+    description: "Presentation-ready outlines and talking points for your next pitch.",
+    gradient: "from-violet-500 to-fuchsia-500",
+  },
+  {
+    icon: Sheet,
+    title: "Excel sheets",
+    description: "Structured spreadsheets with tables and chart-friendly data.",
+    gradient: "from-emerald-500 to-teal-400",
   },
 ];
 
-const STEPS = [
-  { n: "01", title: "Describe Your Document", desc: "Enter your topic, tone, and any specific requirements."         },
-  { n: "02", title: "AI Generates Content",   desc: "GPT-4o crafts structured, high-quality content instantly."      },
-  { n: "03", title: "Edit & Download",        desc: "Refine in the rich editor, then download in your chosen format."},
+const features = [
+  {
+    icon: Sparkles,
+    title: "Prompt to first draft",
+    description: "Turn a rough idea into a usable document in seconds, not hours.",
+  },
+  {
+    icon: Zap,
+    title: "Fast editing workflow",
+    description: "Generate, refine, rewrite, and export from one focused workspace.",
+  },
+  {
+    icon: Shield,
+    title: "Server-side AI calls",
+    description: "Sensitive keys stay on the backend with clearer failure handling.",
+  },
+  {
+    icon: Globe,
+    title: "Template-first flows",
+    description: "Start from proven document structures instead of a blank page.",
+  },
+  {
+    icon: Download,
+    title: "Multi-format export",
+    description: "Download as PDF, Word, PowerPoint, or Excel from the same content.",
+  },
+  {
+    icon: Star,
+    title: "History and sharing",
+    description: "Keep versions, continue drafts, and share work without losing context.",
+  },
 ];
 
-/* ─── Animation ─── */
+const steps = [
+  {
+    number: "01",
+    title: "Choose the output",
+    description: "Start with a document type or a template that fits your workflow.",
+  },
+  {
+    number: "02",
+    title: "Describe what you need",
+    description: "Add the topic, instructions, tone, and any extra requirements.",
+  },
+  {
+    number: "03",
+    title: "Refine and export",
+    description: "Edit the draft, apply AI actions, save it, then export the final file.",
+  },
+];
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: (i: number = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.09, ease: "easeOut" },
-  }),
-};
-
-/* ─── Component ─── */
+const plans = [
+  {
+    name: "Free",
+    price: "$0",
+    description: "Best for trying the workflow and creating a few core documents.",
+    cta: "Start free",
+    featured: false,
+    features: ["10 generations each month", "PDF and Word exports", "Core templates", "Document history"],
+  },
+  {
+    name: "Pro",
+    price: "$19",
+    description: "For professionals who need more formats, more AI, and faster output.",
+    cta: "Upgrade to Pro",
+    featured: true,
+    features: ["100 generations each month", "All 4 file formats", "AI rewrite actions", "Share links and versions"],
+  },
+  {
+    name: "Premium",
+    price: "$49",
+    description: "For teams or high-volume creators who want the most flexibility.",
+    cta: "Go Premium",
+    featured: false,
+    features: ["Unlimited generations", "Advanced templates", "Priority processing", "Custom workflows"],
+  },
+];
 
 export default function LandingPage() {
   return (
-    <>
-      {/* Global base styles injected inline so no Tailwind config dependency */}
-      <style>{`
-        .dg-page { min-height:100vh; background:#07070f; color:#fff; overflow-x:hidden; font-family:inherit; }
+    <div className="min-h-screen bg-[#07070f] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.18),transparent_28%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.12),transparent_22%)]" />
 
-        /* NAV */
-        .dg-nav { position:fixed; top:0; left:0; right:0; z-index:50; height:68px; background:rgba(7,7,15,0.88); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; }
-        .dg-nav-inner { max-width:1200px; margin:0 auto; padding:0 24px; width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-        .dg-nav-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-        .dg-nav-icon { width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,#2563eb,#7c3aed); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .dg-nav-name { font-size:17px; font-weight:800; letter-spacing:-0.3px; white-space:nowrap; }
-        .dg-nav-name span { color:#60a5fa; }
-        .dg-nav-links { display:flex; gap:28px; }
-        .dg-nav-links a { font-size:13px; font-weight:500; color:rgba(255,255,255,0.5); text-decoration:none; transition:color 0.2s; }
-        .dg-nav-links a:hover { color:#fff; }
-        .dg-nav-actions { display:flex; align-items:center; gap:16px; flex-shrink:0; }
-        .dg-signin { font-size:13px; font-weight:500; color:rgba(255,255,255,0.5); text-decoration:none; white-space:nowrap; transition:color 0.2s; }
-        .dg-signin:hover { color:#fff; }
-        .dg-btn-nav { background:#fff; color:#000; font-size:13px; font-weight:700; padding:9px 20px; border-radius:999px; text-decoration:none; white-space:nowrap; transition:opacity 0.2s; }
-        .dg-btn-nav:hover { opacity:0.88; }
+      <header className="sticky top-0 z-50 border-b border-white/8 bg-[#07070f]/75 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 md:px-8">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_12px_40px_rgba(37,99,235,0.35)]">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold tracking-tight">DocGenius AI</p>
+              <p className="text-xs text-white/40">AI document workspace</p>
+            </div>
+          </Link>
 
-        /* HERO */
-        .dg-hero { padding-top:140px; padding-bottom:80px; padding-left:24px; padding-right:24px; text-align:center; position:relative; overflow:hidden; }
-        .dg-hero-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:800px; height:600px; background:radial-gradient(ellipse,rgba(37,99,235,0.16) 0%,transparent 68%); pointer-events:none; z-index:0; }
-        .dg-hero-grid { position:absolute; inset:0; pointer-events:none; z-index:0; background-image:linear-gradient(rgba(92,124,250,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(92,124,250,0.12) 1px,transparent 1px); background-size:56px 56px; }
-        .dg-hero-content { position:relative; z-index:1; max-width:900px; margin:0 auto; }
-        .dg-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); padding:7px 18px; border-radius:999px; font-size:13px; font-weight:500; color:#93c5fd; margin-bottom:32px; }
-        .dg-h1 { font-size:clamp(40px,6vw,80px); font-weight:800; letter-spacing:-2px; line-height:1.07; margin:0 0 20px; }
-        .dg-h1-grad { background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .dg-hero-sub { font-size:clamp(15px,1.8vw,19px); color:rgba(255,255,255,0.5); max-width:560px; margin:0 auto 36px; line-height:1.75; font-weight:400; }
-        .dg-hero-btns { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:64px; }
-        .dg-btn-primary { background:#fff; color:#000; font-size:15px; font-weight:700; padding:14px 32px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:transform 0.2s,opacity 0.2s; }
-        .dg-btn-primary:hover { transform:scale(1.02); opacity:0.9; }
-        .dg-btn-ghost { color:rgba(255,255,255,0.65); font-size:15px; font-weight:600; padding:14px 32px; border-radius:999px; text-decoration:none; border:1px solid rgba(255,255,255,0.1); transition:background 0.2s,color 0.2s; }
-        .dg-btn-ghost:hover { background:rgba(255,255,255,0.06); color:#fff; }
+          <nav className="hidden items-center gap-7 text-sm text-white/55 lg:flex">
+            <a href="#features" className="transition-colors hover:text-white">Features</a>
+            <a href="#workflow" className="transition-colors hover:text-white">Workflow</a>
+            <a href="#pricing" className="transition-colors hover:text-white">Pricing</a>
+          </nav>
 
-        /* DOC CARDS */
-        .dg-doc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-        .dg-doc-card { background:rgba(18,18,28,0.92); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:24px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; transition:transform 0.2s,background 0.2s; }
-        .dg-doc-card:hover { transform:translateY(-6px); background:rgba(26,26,40,0.95); }
-        .dg-doc-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; flex-shrink:0; }
-        .dg-doc-title { font-size:14px; font-weight:700; margin-bottom:6px; }
-        .dg-doc-desc { font-size:12px; color:rgba(255,255,255,0.42); line-height:1.55; }
+          <div className="flex items-center gap-3">
+            <AuthStatus variant="landing" />
+          </div>
+        </div>
+      </header>
 
-        /* SECTION */
-        .dg-section { padding:80px 24px; }
-        .dg-section-alt { background:#0a0a14; }
-        .dg-divider { border:none; border-top:1px solid rgba(255,255,255,0.06); margin:0; }
-        .dg-inner { max-width:1120px; margin:0 auto; }
-        .dg-inner-sm { max-width:840px; margin:0 auto; }
-        .dg-section-head { text-align:center; margin-bottom:52px; }
-        .dg-h2 { font-size:clamp(26px,4vw,48px); font-weight:800; letter-spacing:-1px; line-height:1.12; margin:0 0 12px; }
-        .dg-h2-sub { font-size:15px; color:rgba(255,255,255,0.45); max-width:360px; margin:0 auto; line-height:1.6; }
-        .dg-grad-blue  { background:linear-gradient(90deg,#60a5fa,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .dg-grad-vp    { background:linear-gradient(90deg,#a78bfa,#f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .dg-grad-green { background:linear-gradient(90deg,#34d399,#2dd4bf); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+      <main>
+        <section className="relative overflow-hidden px-6 pb-20 pt-16 md:px-8 md:pt-24">
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-200"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                Better docs, less busywork
+              </motion.div>
 
-        /* FEATURES */
-        .dg-features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-        .dg-feature-card { background:rgba(18,18,28,0.7); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:26px; transition:transform 0.2s,background 0.2s; }
-        .dg-feature-card:hover { transform:translateY(-4px); background:rgba(26,26,40,0.85); }
-        .dg-feature-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; flex-shrink:0; }
-        .dg-feature-title { font-size:15px; font-weight:700; margin-bottom:7px; }
-        .dg-feature-desc { font-size:13px; color:rgba(255,255,255,0.45); line-height:1.65; }
+              <motion.h1
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="max-w-4xl text-4xl font-semibold tracking-tight text-white md:text-6xl md:leading-[1.04]"
+              >
+                Create polished documents with an interface that actually feels usable.
+              </motion.h1>
 
-        /* STEPS */
-        .dg-steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:48px; }
-        .dg-step { text-align:center; display:flex; flex-direction:column; align-items:center; }
-        .dg-step-num { width:76px; height:76px; border-radius:22px; background:rgba(37,99,235,0.1); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:20px; font-size:30px; font-weight:800; color:#60a5fa; transition:transform 0.25s,background 0.25s; }
-        .dg-step:hover .dg-step-num { transform:scale(1.1); background:rgba(37,99,235,0.18); }
-        .dg-step-title { font-size:16px; font-weight:700; margin-bottom:10px; }
-        .dg-step-desc { font-size:13px; color:rgba(255,255,255,0.45); line-height:1.65; max-width:200px; }
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="mt-6 max-w-2xl text-base leading-7 text-white/55 md:text-lg"
+              >
+                Go from prompt to draft, refine with AI, save versions, and export in multiple formats from one clean workflow.
+              </motion.p>
 
-        /* PRICING */
-        .dg-plans-wrap { display:flex; align-items:stretch; gap:0; }
-        .dg-plan { background:rgba(18,18,28,0.85); border:1px solid rgba(255,255,255,0.07); border-radius:22px; padding:32px 28px; display:flex; flex-direction:column; flex:1; transition:transform 0.2s; }
-        .dg-plan:hover { transform:translateY(-6px); }
-        .dg-plan.popular { background:#13132b; border:2px solid rgba(37,99,235,0.65); box-shadow:0 0 50px rgba(37,99,235,0.14); transform:scaleY(1.025); z-index:2; border-radius:26px; }
-        .dg-plan.popular:hover { transform:scaleY(1.025) translateY(-6px); }
-        .dg-pop-badge { position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:#2563eb; color:#fff; font-size:10px; font-weight:700; letter-spacing:1.5px; padding:5px 16px; border-radius:999px; white-space:nowrap; text-transform:uppercase; }
-        .dg-plan-wrap { position:relative; flex:1; display:flex; }
-        .dg-plan-icon { width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; flex-shrink:0; }
-        .dg-plan-name { font-size:26px; font-weight:800; margin-bottom:4px; }
-        .dg-plan-price { font-size:52px; font-weight:800; line-height:1; display:inline; }
-        .dg-plan-per { font-size:15px; color:rgba(255,255,255,0.35); font-weight:400; }
-        .dg-plan-tokens { font-size:12px; font-weight:700; color:#60a5fa; margin-top:6px; margin-bottom:22px; }
-        .dg-plan-features { list-style:none; padding:0; margin:0 0 24px; flex:1; }
-        .dg-plan-feature { display:flex; align-items:flex-start; gap:10px; padding:6px 0; font-size:14px; color:rgba(255,255,255,0.62); }
-        .dg-check { width:18px; height:18px; border-radius:50%; background:rgba(16,185,129,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-        .dg-plan-btn { display:block; width:100%; text-align:center; padding:14px; border-radius:13px; font-size:14px; font-weight:700; text-decoration:none; transition:opacity 0.2s,background 0.2s; }
-        .dg-plan-btn.white { background:#fff; color:#000; }
-        .dg-plan-btn.white:hover { opacity:0.88; }
-        .dg-plan-btn.outline { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); color:#fff; }
-        .dg-plan-btn.outline:hover { background:rgba(255,255,255,0.1); }
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="mt-8 flex flex-col gap-3 sm:flex-row"
+              >
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold !text-slate-950 shadow-[0_16px_40px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 hover:opacity-95"
+                >
+                  <Sparkles className="h-4 w-4 text-slate-950" />
+                  Start for free
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/20 hover:bg-white/[0.08]"
+                >
+                  View dashboard
+                </Link>
+              </motion.div>
 
-        /* CTA */
-        .dg-cta-box { max-width:640px; margin:0 auto; text-align:center; background:rgba(18,18,28,0.92); border:1px solid rgba(37,99,235,0.18); border-radius:40px; padding:64px 48px; position:relative; z-index:1; }
-        .dg-cta-h2 { font-size:clamp(28px,4.5vw,54px); font-weight:800; letter-spacing:-1.5px; margin:0 0 14px; }
-        .dg-cta-sub { font-size:16px; color:rgba(255,255,255,0.45); margin:0 0 32px; max-width:420px; margin-left:auto; margin-right:auto; line-height:1.7; }
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-10 grid gap-3 sm:grid-cols-3"
+              >
+                {[
+                  { value: "4", label: "export formats" },
+                  { value: "AI", label: "rewrite actions" },
+                  { value: "Fast", label: "editor workflow" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <p className="text-2xl font-semibold">{item.value}</p>
+                    <p className="mt-1 text-sm text-white/45">{item.label}</p>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
 
-        /* FOOTER */
-        .dg-footer { background:#07070f; border-top:1px solid rgba(255,255,255,0.06); padding:32px 24px; text-align:center; color:rgba(255,255,255,0.3); font-size:12px; }
-        .dg-footer-logo { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px; font-size:15px; font-weight:800; color:rgba(255,255,255,0.5); }
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 }}
+              className="relative"
+            >
+              <div className="absolute inset-0 rounded-[34px] bg-[linear-gradient(135deg,rgba(37,99,235,0.18),rgba(124,58,237,0.12))] blur-2xl" />
+              <div className="relative rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,24,39,0.95),rgba(9,14,24,0.98))] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+                <div className="mb-5 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                  <div>
+                    <p className="text-sm font-semibold">Document workspace</p>
+                    <p className="text-xs text-white/40">Prompt, edit, save, export</p>
+                  </div>
+                  <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                    Live workflow
+                  </span>
+                </div>
 
-        /* ── RESPONSIVE ── */
-        @media (max-width:900px) {
-          .dg-doc-grid { grid-template-columns:repeat(2,1fr); }
-          .dg-features-grid { grid-template-columns:repeat(2,1fr); }
-          .dg-steps-grid { grid-template-columns:1fr; gap:32px; }
-          .dg-step-desc { max-width:100%; }
-          .dg-plans-wrap { flex-direction:column; gap:16px; }
-          .dg-plan.popular { transform:none; }
-          .dg-plan.popular:hover { transform:translateY(-6px); }
-          .dg-nav-links { display:none; }
-          .dg-cta-box { padding:48px 28px; }
-        }
-        @media (max-width:600px) {
-          .dg-doc-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
-          .dg-features-grid { grid-template-columns:1fr; }
-          .dg-hero { padding-top:100px; }
-          .dg-h1 { letter-spacing:-1px; }
-          .dg-hero-btns { flex-direction:column; width:100%; }
-          .dg-btn-primary, .dg-btn-ghost { width:100%; justify-content:center; }
-          .dg-section { padding:60px 18px; }
-          .dg-signin { display:none; }
-        }
-      `}</style>
+                <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
+                  <div className="rounded-[26px] border border-white/10 bg-[#0f1726] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35">Generator</p>
+                    <div className="mt-4 space-y-3">
+                      {["Format: Word", "Tone: Professional", "Topic: Investor update"].map((row) => (
+                        <div key={row} className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-white/70">
+                          {row}
+                        </div>
+                      ))}
+                      <div className="rounded-2xl border border-blue-500/25 bg-blue-500/10 px-4 py-3 text-sm text-blue-100">
+                        Generate with AI
+                      </div>
+                    </div>
+                  </div>
 
-      <div className="dg-page">
-
-        {/* ── Navbar ── */}
-        <motion.nav
-          className="dg-nav"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        >
-          <div className="dg-nav-inner">
-            <div className="dg-nav-logo">
-              <div className="dg-nav-icon">
-                <Sparkles style={{ width: 18, height: 18, color: "#fff" }} />
+                  <div className="rounded-[26px] border border-white/10 bg-[#0b1220] p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold">Q2 Investor Update</p>
+                        <p className="text-xs text-white/40">Ready to edit and export</p>
+                      </div>
+                      <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/55">
+                        Word
+                      </span>
+                    </div>
+                    <div className="mt-4 space-y-3 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                      <p className="text-lg font-semibold">Executive Summary</p>
+                      <p className="text-sm leading-7 text-white/55">
+                        Revenue grew steadily this quarter, led by stronger retention, faster onboarding, and improved operating efficiency.
+                      </p>
+                      <ul className="space-y-2 text-sm text-white/60">
+                        <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-blue-300" /> Revenue up 18% quarter over quarter</li>
+                        <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-blue-300" /> New enterprise pipeline ahead of plan</li>
+                        <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-blue-300" /> Hiring focused on product and customer success</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <span className="dg-nav-name">DocGenius <span>AI</span></span>
+            </motion.div>
+          </div>
+        </section>
+
+        <section className="border-y border-white/8 bg-white/[0.02] px-6 py-6 md:px-8">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 text-sm text-white/45">
+            <span className="font-medium text-white/65">Built for:</span>
+            {["Reports", "Resumes", "Decks", "Proposals", "Internal docs", "Spreadsheets"].map((item) => (
+              <span key={item} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">
+                {item}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section id="features" className="px-6 py-20 md:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-200/80">Features</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">A cleaner product flow from idea to finished file.</h2>
+              <p className="mt-4 text-base leading-7 text-white/50">
+                The app should help you move quickly, not force you to wrestle with the interface.
+              </p>
             </div>
-            <div className="dg-nav-links">
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How it works</a>
-              <a href="#pricing">Pricing</a>
-            </div>
-            <div className="dg-nav-actions">
-              <Link href="/login" className="dg-signin">Sign in</Link>
-              <Link href="/signup" className="dg-btn-nav">Get Started Free</Link>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6"
+                >
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-200">
+                    <feature.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold">{feature.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/50">{feature.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
-        </motion.nav>
+        </section>
 
-        {/* ── Hero ── */}
-        <section className="dg-hero">
-          <div className="dg-hero-glow" />
-          <div className="dg-hero-grid" />
-          <div className="dg-hero-content">
-
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="show" custom={0}
-              className="dg-badge"
-            >
-              <Sparkles style={{ width: 14, height: 14, flexShrink: 0 }} />
-              Powered by GPT-4o · Generate docs in &lt;30 seconds
-            </motion.div>
-
-            <motion.h1
-              variants={fadeUp} initial="hidden" animate="show" custom={1}
-              className="dg-h1"
-            >
-              Create Professional
-              <br />
-              <span className="dg-h1-grad">Documents with AI</span>
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp} initial="hidden" animate="show" custom={2}
-              className="dg-hero-sub"
-            >
-              Generate high-quality PDFs, Word documents, PowerPoint presentations,
-              and Excel spreadsheets in seconds. Just describe what you need.
-            </motion.p>
-
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="show" custom={3}
-              className="dg-hero-btns"
-            >
-              <Link href="/signup" className="dg-btn-primary">
-                Start Generating Free <ArrowRight style={{ width: 16, height: 16 }} />
-              </Link>
-              <Link href="/login" className="dg-btn-ghost">Sign In</Link>
-            </motion.div>
-
-            {/* Doc Cards */}
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="show" custom={4}
-              className="dg-doc-grid"
-            >
-              {DOC_TYPES.map((t) => (
-                <div key={t.label} className="dg-doc-card">
-                  <div className="dg-doc-icon" style={{ background: t.grad }}>
-                    <t.icon style={{ width: 24, height: 24, color: "#fff" }} />
+        <section className="px-6 pb-20 md:px-8">
+          <div className="mx-auto max-w-7xl rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,24,39,0.9),rgba(9,14,24,0.94))] p-6 md:p-8">
+            <div className="mb-8 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/80">Formats</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">One interface, four output types.</h2>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {documentTypes.map((type) => (
+                <div key={type.title} className="rounded-[26px] border border-white/10 bg-white/[0.03] p-5">
+                  <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] bg-gradient-to-br ${type.gradient}`}>
+                    <type.icon className="h-6 w-6 text-white" />
                   </div>
-                  <div className="dg-doc-title">{t.label}</div>
-                  <div className="dg-doc-desc">{t.desc}</div>
+                  <h3 className="text-lg font-semibold">{type.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/50">{type.description}</p>
                 </div>
               ))}
-            </motion.div>
-
+            </div>
           </div>
         </section>
 
-        <hr className="dg-divider" />
+        <section id="workflow" className="px-6 py-20 md:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-violet-200/80">Workflow</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">Simple enough to learn fast, strong enough to use daily.</h2>
+            </div>
 
-        {/* ── Features ── */}
-        <section id="features" className="dg-section dg-section-alt">
-          <div className="dg-inner">
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
-              className="dg-section-head"
-            >
-              <h2 className="dg-h2">
-                Everything You Need to{" "}
-                <span className="dg-grad-blue">Create Better Docs</span>
-              </h2>
-              <p className="dg-h2-sub">A complete AI-powered document suite right in your browser.</p>
-            </motion.div>
-
-            <div className="dg-features-grid">
-              {FEATURES.map((f, i) => (
+            <div className="grid gap-4 lg:grid-cols-3">
+              {steps.map((step, index) => (
                 <motion.div
-                  key={f.title}
-                  variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i}
-                  className="dg-feature-card"
+                  key={step.number}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.06 }}
+                  className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6"
                 >
-                  <div className="dg-feature-icon" style={{ background: f.iconBg }}>
-                    <f.icon style={{ width: 22, height: 22, color: f.iconColor }} />
-                  </div>
-                  <div className="dg-feature-title">{f.title}</div>
-                  <div className="dg-feature-desc">{f.desc}</div>
+                  <p className="text-4xl font-semibold text-white/18">{step.number}</p>
+                  <h3 className="mt-6 text-xl font-semibold">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/50">{step.description}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        <hr className="dg-divider" />
-
-        {/* ── How It Works ── */}
-        <section id="how-it-works" className="dg-section">
-          <div className="dg-inner-sm">
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
-              className="dg-section-head"
-            >
-              <h2 className="dg-h2">
-                Three Steps to a{" "}
-                <span className="dg-grad-vp">Perfect Document</span>
-              </h2>
-            </motion.div>
-
-            <div className="dg-steps-grid">
-              {STEPS.map((s, i) => (
-                <motion.div
-                  key={s.n}
-                  variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i}
-                  className="dg-step"
-                >
-                  <div className="dg-step-num">{s.n}</div>
-                  <div className="dg-step-title">{s.title}</div>
-                  <div className="dg-step-desc">{s.desc}</div>
-                </motion.div>
-              ))}
+        <section id="pricing" className="px-6 pb-20 md:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-200/80">Pricing</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">Start small and upgrade when the workflow clicks.</h2>
             </div>
-          </div>
-        </section>
 
-        <hr className="dg-divider" />
-
-        {/* ── Pricing ── */}
-        <section id="pricing" className="dg-section dg-section-alt">
-          <div className="dg-inner">
-            <motion.div
-              variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
-              className="dg-section-head"
-            >
-              <h2 className="dg-h2">
-                Simple,{" "}
-                <span className="dg-grad-green">Transparent Pricing</span>
-              </h2>
-              <p className="dg-h2-sub">Start free, upgrade when you need more power</p>
-            </motion.div>
-
-            <div className="dg-plans-wrap">
-              {PLANS.map((plan, i) => (
-                <motion.div
+            <div className="grid gap-5 lg:grid-cols-3">
+              {plans.map((plan) => (
+                <div
                   key={plan.name}
-                  className="dg-plan-wrap"
-                  variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i}
+                  className={`rounded-[30px] border p-6 ${
+                    plan.featured
+                      ? "border-blue-500/35 bg-[linear-gradient(180deg,rgba(37,99,235,0.16),rgba(12,18,34,0.95))] shadow-[0_24px_60px_rgba(37,99,235,0.18)]"
+                      : "border-white/10 bg-white/[0.04]"
+                  }`}
                 >
-                  {plan.popular && <div className="dg-pop-badge">MOST POPULAR</div>}
-                  <div className={`dg-plan${plan.popular ? " popular" : ""}`} style={{ width: "100%" }}>
-                    <div className="dg-plan-icon" style={{ background: plan.grad }}>
-                      <Star style={{ width: 20, height: 20, color: "#fff" }} />
-                    </div>
-                    <div className="dg-plan-name">{plan.name}</div>
+                  <div className="flex items-start justify-between gap-4">
                     <div>
-                      <span className="dg-plan-price">{plan.price}</span>
-                      <span className="dg-plan-per">/mo</span>
+                      <h3 className="text-xl font-semibold">{plan.name}</h3>
+                      <p className="mt-2 text-sm leading-7 text-white/50">{plan.description}</p>
                     </div>
-                    <div className="dg-plan-tokens">{plan.tokens}</div>
-                    <ul className="dg-plan-features">
-                      {plan.features.map((feat) => (
-                        <li key={feat} className="dg-plan-feature">
-                          <div className="dg-check">
-                            <Check style={{ width: 10, height: 10, color: "#34d399" }} />
-                          </div>
-                          {feat}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link href="/signup" className={`dg-plan-btn ${plan.popular ? "white" : "outline"}`}>
-                      {plan.cta}
-                    </Link>
+                    {plan.featured && (
+                      <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">
+                        Popular
+                      </span>
+                    )}
                   </div>
-                </motion.div>
+                  <div className="mt-6 text-4xl font-semibold">{plan.price}<span className="ml-1 text-sm text-white/35">/mo</span></div>
+                  <ul className="mt-6 space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2 text-sm text-white/65">
+                        <Check className="mt-0.5 h-4 w-4 text-emerald-300" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/signup"
+                    className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold ${
+                      plan.featured
+                        ? "bg-white !text-slate-950 shadow-[0_16px_40px_rgba(255,255,255,0.12)]"
+                        : "border border-white/12 bg-white/[0.04] text-white"
+                    }`}
+                  >
+                    {plan.featured && <Sparkles className="h-4 w-4 text-slate-950" />}
+                    {plan.cta}
+                    <ArrowRight className={`h-4 w-4 ${plan.featured ? "text-slate-950" : "text-white"}`} />
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
         </section>
+      </main>
 
-        <hr className="dg-divider" />
-
-        {/* ── CTA ── */}
-        <section className="dg-section" style={{ position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 500, background: "radial-gradient(ellipse,rgba(37,99,235,0.09) 0%,transparent 68%)", pointerEvents: "none" }} />
-          <motion.div
-            variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
-            className="dg-cta-box"
-          >
-            <Sparkles style={{ width: 44, height: 44, color: "#60a5fa", margin: "0 auto 20px" }} />
-            <h2 className="dg-cta-h2">Ready to Create?</h2>
-            <p className="dg-cta-sub">Join thousands of professionals using AI to create better documents, faster.</p>
-            <Link href="/signup" className="dg-btn-primary" style={{ display: "inline-flex" }}>
-              Start for Free <ArrowRight style={{ width: 16, height: 16 }} />
-            </Link>
-          </motion.div>
-        </section>
-
-        {/* ── Footer ── */}
-        <footer className="dg-footer">
-          <div className="dg-footer-logo">
-            <Sparkles style={{ width: 16, height: 16, color: "#60a5fa" }} />
-            DocGenius AI
+      <footer className="border-t border-white/8 px-6 py-8 md:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-sm text-white/40 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)]">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <p className="font-medium text-white/75">DocGenius AI</p>
+              <p>AI-powered document workspace</p>
+            </div>
           </div>
-          <p>© 2026 DocGenius AI. Built with Next.js + GPT-4o.</p>
-        </footer>
-
-      </div>
-    </>
+          <p>Built for cleaner document creation, editing, and export.</p>
+        </div>
+      </footer>
+    </div>
   );
 }

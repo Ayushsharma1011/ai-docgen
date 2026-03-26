@@ -68,7 +68,9 @@ export default function HistoryPanel() {
             <RefreshCw className="w-4 h-4 animate-spin text-white/35" aria-label="Loading versions" />
           </div>
         ) : versions.length === 0 ? (
-          <p className="text-xs text-white/35 text-center">No versions saved yet.</p>
+          <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center text-xs text-white/35">
+            Save the document again after making edits to create a restore point.
+          </div>
         ) : (
           versions.map((v) => (
             <div

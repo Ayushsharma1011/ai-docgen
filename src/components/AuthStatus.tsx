@@ -81,7 +81,7 @@ export default function AuthStatus({ variant = "landing" }: AuthStatusProps) {
 
   if (loading) {
     return (
-      <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white/50">
+      <div className="glass-button inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs text-white/50">
         <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
         Checking account
       </div>
@@ -93,13 +93,13 @@ export default function AuthStatus({ variant = "landing" }: AuthStatusProps) {
       <div className="flex items-center gap-2">
         <Link
           href="/login"
-          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-white/78 transition-colors hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+          className="glass-button inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium text-white/78 hover:text-white"
         >
           Sign in
         </Link>
         <Link
           href="/signup"
-          className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white px-4 py-2.5 text-sm font-semibold text-[#020617] transition-opacity hover:opacity-90"
+          className="glass-button glass-button-primary inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-[#020617]"
           style={{ color: "#020617" }}
         >
           Get Started Free
@@ -113,7 +113,7 @@ export default function AuthStatus({ variant = "landing" }: AuthStatusProps) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="group inline-flex items-center gap-3 rounded-full border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] px-2.5 py-2 pr-3 text-left text-white shadow-[0_12px_30px_rgba(0,0,0,0.2)] transition-all hover:border-white/20 hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.11),rgba(255,255,255,0.05))]"
+        className="glass-button group inline-flex items-center gap-3 rounded-full px-2.5 py-2 pr-3 text-left text-white"
         aria-expanded={open}
         aria-haspopup="menu"
       >
@@ -138,7 +138,7 @@ export default function AuthStatus({ variant = "landing" }: AuthStatusProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className={`absolute right-0 top-[calc(100%+12px)] z-50 w-[280px] overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,rgba(13,18,31,0.98),rgba(8,11,20,0.98))] shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl ${
+            className={`glass-shell absolute right-0 top-[calc(100%+12px)] z-50 w-[280px] rounded-[26px] ${
               variant === "compact" ? "w-[250px]" : ""
             }`}
             role="menu"

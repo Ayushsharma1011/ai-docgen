@@ -69,10 +69,10 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-8 md:px-8">
       <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.22),transparent_30%),linear-gradient(135deg,#111827_0%,#0b1220_55%,#07070f_100%)] p-6 md:p-8">
+        <div className="glass-shell overflow-hidden rounded-[32px] bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.22),transparent_30%),linear-gradient(135deg,rgba(17,24,39,0.78)_0%,rgba(11,18,32,0.72)_55%,rgba(7,7,15,0.72)_100%)] p-6 md:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">
+              <div className="glass-panel mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">
                 <Sparkles className="h-3.5 w-3.5" />
                 Workspace overview
               </div>
@@ -85,7 +85,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-row">
               <Link
                 href="/editor"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/70 bg-white px-4 py-3 text-sm font-semibold text-[#020617] transition-opacity hover:opacity-90"
+                className="glass-button glass-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-[#020617]"
                 style={{ color: "#020617" }}
               >
                 <FilePlus className="h-4 w-4" />
@@ -93,7 +93,7 @@ export default function DashboardPage() {
               </Link>
               <Link
                 href="/templates"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white transition-colors hover:border-white/20 hover:bg-white/[0.08]"
+                className="glass-button inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white"
               >
                 Browse templates
               </Link>
@@ -114,7 +114,7 @@ export default function DashboardPage() {
           { label: "Created this month", value: documentsThisMonth, icon: TrendingUp, iconBg: "rgba(16,185,129,0.12)", iconColor: "#34d399" },
           { label: "Upgrade options", value: "Pro", icon: Crown, iconBg: "rgba(245,158,11,0.12)", iconColor: "#fbbf24" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
+          <div key={stat.label} className="glass-panel rounded-[26px] p-5">
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: stat.iconBg }}>
               <stat.icon className="h-5 w-5" style={{ color: stat.iconColor }} />
             </div>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.14 }}
-          className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6"
+          className="glass-panel rounded-[28px] p-6"
         >
           <div className="mb-5 flex items-center justify-between">
             <div>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
               <motion.div key={item.type} whileHover={{ y: -4 }}>
                 <Link
                   href={`/editor?type=${item.type}`}
-                  className="flex h-full flex-col rounded-[24px] border border-white/10 bg-[#0f1726] p-5 transition-colors hover:border-white/20"
+                  className="glass-panel flex h-full flex-col rounded-[24px] p-5"
                 >
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[18px]" style={{ background: item.grad }}>
                     <item.icon className="h-6 w-6 text-white" />
@@ -162,19 +162,19 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18 }}
-          className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6"
+          className="glass-panel rounded-[28px] p-6"
         >
           <h2 className="text-xl font-semibold">Next best actions</h2>
           <div className="mt-5 space-y-3">
-            <Link href="/history" className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.06]">
+            <Link href="/history" className="glass-panel block rounded-2xl p-4">
               <p className="text-sm font-semibold">Review saved drafts</p>
               <p className="mt-1 text-sm text-white/45">Re-open recent documents and continue editing.</p>
             </Link>
-            <Link href="/premium" className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.06]">
+            <Link href="/premium" className="glass-panel block rounded-2xl p-4">
               <p className="text-sm font-semibold">Get more tokens</p>
               <p className="mt-1 text-sm text-white/45">Unlock PowerPoint, Excel, and more AI capacity.</p>
             </Link>
-            <Link href="/templates" className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.06]">
+            <Link href="/templates" className="glass-panel block rounded-2xl p-4">
               <p className="text-sm font-semibold">Use a template</p>
               <p className="mt-1 text-sm text-white/45">Start with a structured prompt instead of a blank page.</p>
             </Link>
@@ -204,13 +204,13 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : docs.length === 0 ? (
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-12 text-center">
+          <div className="glass-panel rounded-[28px] p-12 text-center">
             <FileText className="mx-auto mb-4 h-12 w-12 text-white/20" />
             <h3 className="text-lg font-semibold">No documents yet</h3>
             <p className="mt-2 text-sm text-white/45">Create your first AI-powered document to see it here.</p>
             <Link
               href="/editor"
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-white/70 bg-white px-4 py-3 text-sm font-semibold text-[#020617] transition-opacity hover:opacity-90"
+              className="glass-button glass-button-primary mt-5 inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-[#020617]"
               style={{ color: "#020617" }}
             >
               <FilePlus className="h-4 w-4" />

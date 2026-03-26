@@ -128,7 +128,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#07070f] text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.18),transparent_28%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.12),transparent_22%)]" />
 
-      <header className="sticky top-0 z-50 border-b border-white/8 bg-[#07070f]/75 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/8 bg-[#07070f]/45 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 md:px-8">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_12px_40px_rgba(37,99,235,0.35)]">
@@ -159,7 +159,7 @@ export default function LandingPage() {
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-200"
+                className="glass-panel mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 Better docs, less busywork
@@ -191,7 +191,7 @@ export default function LandingPage() {
               >
                 <Link
                   href="/signup"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/70 bg-white px-6 py-3.5 text-sm font-semibold text-[#020617] shadow-[0_16px_40px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 hover:opacity-95"
+                  className="glass-button glass-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-semibold text-[#020617]"
                   style={{ color: "#020617" }}
                 >
                   <Sparkles className="h-4 w-4 text-[#020617]" />
@@ -200,7 +200,7 @@ export default function LandingPage() {
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/20 hover:bg-white/[0.08]"
+                  className="glass-button inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-semibold text-white"
                 >
                   View dashboard
                 </Link>
@@ -217,7 +217,7 @@ export default function LandingPage() {
                   { value: "AI", label: "rewrite actions" },
                   { value: "Fast", label: "editor workflow" },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <div key={item.label} className="glass-panel rounded-2xl p-4">
                     <p className="text-2xl font-semibold">{item.value}</p>
                     <p className="mt-1 text-sm text-white/45">{item.label}</p>
                   </div>
@@ -232,8 +232,8 @@ export default function LandingPage() {
               className="relative"
             >
               <div className="absolute inset-0 rounded-[34px] bg-[linear-gradient(135deg,rgba(37,99,235,0.18),rgba(124,58,237,0.12))] blur-2xl" />
-              <div className="relative rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,24,39,0.95),rgba(9,14,24,0.98))] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-                <div className="mb-5 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+              <div className="glass-shell relative rounded-[34px] p-5">
+                <div className="glass-panel mb-5 flex items-center justify-between rounded-2xl px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold">Document workspace</p>
                     <p className="text-xs text-white/40">Prompt, edit, save, export</p>
@@ -244,31 +244,31 @@ export default function LandingPage() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
-                  <div className="rounded-[26px] border border-white/10 bg-[#0f1726] p-4">
+                  <div className="glass-panel rounded-[26px] p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/35">Generator</p>
                     <div className="mt-4 space-y-3">
                       {["Format: Word", "Tone: Professional", "Topic: Investor update"].map((row) => (
-                        <div key={row} className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-white/70">
+                        <div key={row} className="glass-panel rounded-2xl px-4 py-3 text-sm text-white/70">
                           {row}
                         </div>
                       ))}
-                      <div className="rounded-2xl border border-blue-500/25 bg-blue-500/10 px-4 py-3 text-sm text-blue-100">
+                      <div className="glass-panel rounded-2xl border-blue-500/25 bg-blue-500/10 px-4 py-3 text-sm text-blue-100">
                         Generate with AI
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-[26px] border border-white/10 bg-[#0b1220] p-4">
+                  <div className="glass-panel rounded-[26px] p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold">Q2 Investor Update</p>
                         <p className="text-xs text-white/40">Ready to edit and export</p>
                       </div>
-                      <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/55">
+                      <span className="glass-panel rounded-full px-3 py-1 text-xs text-white/55">
                         Word
                       </span>
                     </div>
-                    <div className="mt-4 space-y-3 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                    <div className="glass-panel mt-4 space-y-3 rounded-[22px] p-4">
                       <p className="text-lg font-semibold">Executive Summary</p>
                       <p className="text-sm leading-7 text-white/55">
                         Revenue grew steadily this quarter, led by stronger retention, faster onboarding, and improved operating efficiency.
@@ -290,7 +290,7 @@ export default function LandingPage() {
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 text-sm text-white/45">
             <span className="font-medium text-white/65">Built for:</span>
             {["Reports", "Resumes", "Decks", "Proposals", "Internal docs", "Spreadsheets"].map((item) => (
-              <span key={item} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">
+              <span key={item} className="glass-panel rounded-full px-3 py-2">
                 {item}
               </span>
             ))}
@@ -315,7 +315,7 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6"
+                  className="glass-panel rounded-[28px] p-6"
                 >
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-200">
                     <feature.icon className="h-5 w-5" />
@@ -329,14 +329,14 @@ export default function LandingPage() {
         </section>
 
         <section className="px-6 pb-20 md:px-8">
-          <div className="mx-auto max-w-7xl rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,24,39,0.9),rgba(9,14,24,0.94))] p-6 md:p-8">
+          <div className="glass-shell mx-auto max-w-7xl rounded-[34px] p-6 md:p-8">
             <div className="mb-8 max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/80">Formats</p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">One interface, four output types.</h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {documentTypes.map((type) => (
-                <div key={type.title} className="rounded-[26px] border border-white/10 bg-white/[0.03] p-5">
+                <div key={type.title} className="glass-panel rounded-[26px] p-5">
                   <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-[20px] bg-gradient-to-br ${type.gradient}`}>
                     <type.icon className="h-6 w-6 text-white" />
                   </div>
@@ -363,7 +363,7 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.06 }}
-                  className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6"
+                  className="glass-panel rounded-[28px] p-6"
                 >
                   <p className="text-4xl font-semibold text-white/18">{step.number}</p>
                   <h3 className="mt-6 text-xl font-semibold">{step.title}</h3>
@@ -385,10 +385,10 @@ export default function LandingPage() {
               {plans.map((plan) => (
                 <div
                   key={plan.name}
-                  className={`rounded-[30px] border p-6 ${
+                  className={`glass-panel rounded-[30px] p-6 ${
                     plan.featured
                       ? "border-blue-500/35 bg-[linear-gradient(180deg,rgba(37,99,235,0.16),rgba(12,18,34,0.95))] shadow-[0_24px_60px_rgba(37,99,235,0.18)]"
-                      : "border-white/10 bg-white/[0.04]"
+                      : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -397,7 +397,7 @@ export default function LandingPage() {
                       <p className="mt-2 text-sm leading-7 text-white/50">{plan.description}</p>
                     </div>
                     {plan.featured && (
-                      <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">
+                      <span className="glass-panel rounded-full border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">
                         Popular
                       </span>
                     )}
@@ -413,10 +413,10 @@ export default function LandingPage() {
                   </ul>
                   <Link
                     href="/signup"
-                    className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold ${
+                    className={`glass-button mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold ${
                       plan.featured
-                        ? "border border-white/70 bg-white text-[#020617] shadow-[0_16px_40px_rgba(255,255,255,0.12)]"
-                        : "border border-white/12 bg-white/[0.04] text-white"
+                        ? "glass-button-primary text-[#020617]"
+                        : "text-white"
                     }`}
                     style={plan.featured ? { color: "#020617" } : undefined}
                   >

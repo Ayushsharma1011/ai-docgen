@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { htmlToStructuredDocument } from "@/lib/document-content";
+import { htmlToSlides, htmlToStructuredDocument, htmlToWorkbook } from "@/lib/document-content";
+import { normalizeGeneratedContent } from "@/lib/format-content";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { content, topic, docType } = await req.json();
+    const { content, topic, docType, structuredContent } = await req.json();
 
     if (!content) {
       return NextResponse.json({ error: "No content provided" }, { status: 400 });
@@ -21,11 +22,25 @@ export async function POST(req: NextRequest) {
 
     const pythonUrl = process.env.PYTHON_SERVICE_URL || "http://localhost:8000";
     const structuredDocument = htmlToStructuredDocument(content, topic || "Document");
-    const structuredContent = {
-      title: structuredDocument.title,
-      sections: structuredDocument.sections,
-      docType,
-    };
+    const normalizedContent =
+      structuredContent && typeof structuredContent === "object"
+        ? normalizeGeneratedContent(docType, structuredContent, topic || "Document")
+        : null;
+
+    const payload =
+      normalizedContent?.docType === "pptx"
+        ? normalizedContent
+        : normalizedContent?.docType === "xlsx"
+          ? normalizedContent
+          : docType === "pptx"
+            ? htmlToSlides(content, topic || "Presentation")
+            : docType === "xlsx"
+              ? htmlToWorkbook(content, topic || "Spreadsheet")
+              : {
+                  title: structuredDocument.title,
+                  sections: structuredDocument.sections,
+                  docType,
+                };
 
     let response: Response;
 
@@ -33,7 +48,7 @@ export async function POST(req: NextRequest) {
       response = await fetch(`${pythonUrl}/generate/${docType}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(structuredContent),
+        body: JSON.stringify(payload),
         signal: AbortSignal.timeout(45_000),
       });
     } catch (error) {

@@ -17,11 +17,13 @@ import {
   LogOut,
   Menu,
   House,
+  Shield,
   Sparkles,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { useLiveAccount } from "@/hooks/use-live-account";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -36,8 +38,8 @@ export default function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [tokens, setTokens] = useState<number | null>(null);
-  const [userEmail, setUserEmail] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { email: userEmail, tokens } = useLiveAccount();
 
   useEffect(() => {
     const supabase = createClient();
@@ -47,12 +49,11 @@ export default function Sidebar() {
         return;
       }
 
-      setUserEmail(user.email ?? "");
-      supabase.from("tokens").select("balance").eq("user_id", user.id).single().then(({ data }) => {
-        if (data) {
-          setTokens(data.balance);
-        }
-      });
+      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+        .split(",")
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean);
+      setIsAdmin(adminEmails.includes((user.email ?? "").trim().toLowerCase()));
     });
   }, []);
 
@@ -109,7 +110,7 @@ export default function Sidebar() {
 
       <div className="flex-1 px-3 py-4">
         <nav className="space-y-1.5" aria-label="Sidebar Navigation">
-          {navItems.map((item) => {
+          {[...navItems, ...(isAdmin ? [{ href: "/admin/payments", icon: Shield, label: "Payments" }] : [])].map((item) => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (

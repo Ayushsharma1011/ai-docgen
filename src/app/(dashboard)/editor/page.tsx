@@ -29,9 +29,12 @@ import { createClient } from "@/lib/supabase/client";
 import { requestJson, ApiClientError } from "@/lib/client-api";
 import { useEditorStore } from "@/lib/store";
 import AIPanel from "@/components/Editor/AIPanel";
+import FormatPreview from "@/components/Editor/FormatPreview";
 import HistoryPanel from "@/components/Editor/HistoryPanel";
 import type { DocumentTone, DocumentType, Template } from "@/types";
+import { renderGeneratedContent } from "@/lib/format-content";
 import { DOC_TYPE_LABELS, PREMIUM_FEATURES, TOKEN_COSTS } from "@/lib/utils";
+import type { NormalizedGeneratedContent } from "@/lib/format-content";
 
 const TipTapEditor = dynamic(() => import("@/components/Editor/TipTapEditor"), { ssr: false });
 
@@ -51,10 +54,7 @@ const TONES: { value: DocumentTone; label: string }[] = [
 ];
 
 type GenerateResponse = {
-  content: {
-    title: string;
-    sections?: Array<{ heading: string; body: string; bullets?: string[] }>;
-  };
+  content: NormalizedGeneratedContent;
   tokensRemaining: number;
 };
 
@@ -86,19 +86,6 @@ type SpeechRecognitionInstance = {
 
 type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
 
-function toHtml(content: GenerateResponse["content"]) {
-  const sections = content.sections || [];
-
-  return [
-    `<h1>${content.title}</h1>`,
-    ...sections.flatMap((section) => [
-      `<h2>${section.heading}</h2>`,
-      `<p>${section.body}</p>`,
-      ...(section.bullets?.length ? [`<ul>${section.bullets.map((bullet) => `<li>${bullet}</li>`).join("")}</ul>`] : []),
-    ]),
-  ].join("");
-}
-
 export function EditorWorkspace({ preserveState = false }: { preserveState?: boolean }) {
   const editorRef = useRef<Editor | null>(null);
   const suggestionsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -126,6 +113,8 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
     setIsSaving,
     aiSuggestions,
     setAISuggestions,
+    structuredOutput,
+    setStructuredOutput,
     resetForm,
   } = useEditorStore();
 
@@ -158,6 +147,10 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
       setDocType(urlType);
     }
   }, [setDocType, urlType]);
+
+  useEffect(() => {
+    setStructuredOutput(null);
+  }, [docType, setStructuredOutput]);
 
   useEffect(() => {
     if (!isGenerating) {
@@ -267,7 +260,8 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
         json: { topic, instructions, docType, tone, requirements },
       });
 
-      setEditorContent(toHtml(data.content));
+      setStructuredOutput(data.content);
+      setEditorContent(renderGeneratedContent(data.content));
       setAISuggestions([]);
       await fetchSuggestionsDebounced(data.content.title || topic);
       toast.success(`Document generated. ${data.tokensRemaining} tokens remaining.`);
@@ -283,6 +277,11 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
     } finally {
       setIsGenerating(false);
     }
+  }
+
+  function handleStructuredWorkspaceChange(nextContent: NormalizedGeneratedContent) {
+    setStructuredOutput(nextContent);
+    setEditorContent(renderGeneratedContent(nextContent));
   }
 
   async function handleRewrite(action: "rewrite" | "expand" | "summarize" | "simplify" | "improve") {
@@ -388,7 +387,7 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
       const html = editorRef.current?.getHTML() || editorContent;
       const data = await requestJson<DownloadResponse>("/api/download", {
         method: "POST",
-        json: { content: html, topic, docType, tone },
+        json: { content: html, topic, docType, tone, structuredContent: structuredOutput },
       });
 
       window.open(data.url, "_blank", "noopener,noreferrer");
@@ -639,9 +638,9 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col xl:flex-row xl:overflow-hidden">
-            <section className="min-h-[52vh] flex-1 border-b border-white/7 xl:border-b-0 xl:border-r">
+            <section className="min-h-[52vh] min-w-0 flex-1 overflow-hidden border-b border-white/7 xl:border-b-0 xl:border-r">
               {isGenerating ? (
-                <div className="flex h-full items-center justify-center px-6">
+                <div className="flex h-full items-center justify-center overflow-y-auto px-6">
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
                     <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
                       <Sparkles className="mx-auto mb-4 h-10 w-10 text-blue-300" />
@@ -656,13 +655,40 @@ export function EditorWorkspace({ preserveState = false }: { preserveState?: boo
                   </motion.div>
                 </div>
               ) : (
-                <TipTapEditor
-                  content={editorContent}
-                  onChange={setEditorContent}
-                  onSelectionChange={setSelectedText}
-                  editorRef={editorRef}
-                  placeholder="Generate with AI or start drafting here..."
-                />
+                <div className="flex h-full min-h-0 flex-col overflow-hidden">
+                  <div className="min-h-0 flex-1 overflow-y-auto">
+                    <div className="flex min-h-full flex-col">
+                      <FormatPreview
+                        docType={docType}
+                        content={editorContent}
+                        structuredContent={structuredOutput}
+                        topic={topic}
+                        onStructuredChange={handleStructuredWorkspaceChange}
+                      />
+                      <div className="min-h-0 flex-1 border-t border-white/7">
+                        <TipTapEditor
+                          mode={docType}
+                          content={editorContent}
+                          onChange={(nextContent) => {
+                            setStructuredOutput(null);
+                            setEditorContent(nextContent);
+                          }}
+                          onSelectionChange={setSelectedText}
+                          editorRef={editorRef}
+                          placeholder={
+                            docType === "docx"
+                              ? "Draft your Word document with headings, paragraphs, and lists..."
+                              : docType === "pdf"
+                                ? "Draft a clean PDF-style report with clear sections and insights..."
+                                : docType === "pptx"
+                                  ? "Refine the slide narrative, speaker notes, and slide copy here..."
+                                  : "Refine the spreadsheet narrative and data notes here..."
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </section>
 

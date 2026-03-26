@@ -19,6 +19,24 @@ export interface TokenRecord {
   updated_at: string;
 }
 
+export interface PaymentSubmission {
+  id: string;
+  user_id: string;
+  payment_type: "plan" | "tokens";
+  plan: PlanType | null;
+  token_amount: number | null;
+  rupee_amount: number;
+  upi_id: string;
+  upi_name: string | null;
+  reference_note: string | null;
+  admin_note: string | null;
+  status: "pending" | "confirmed" | "rejected";
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Document {
   id: string;
   user_id: string;

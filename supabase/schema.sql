@@ -16,9 +16,11 @@ create table if not exists public.users (
 
 alter table public.users enable row level security;
 
+drop policy if exists "Users can view own profile" on public.users;
 create policy "Users can view own profile" on public.users
   for select using (auth.uid() = id);
 
+drop policy if exists "Users can update own profile" on public.users;
 create policy "Users can update own profile" on public.users
   for update using (auth.uid() = id);
 
@@ -35,12 +37,15 @@ create table if not exists public.tokens (
 
 alter table public.tokens enable row level security;
 
+drop policy if exists "Users can view own tokens" on public.tokens;
 create policy "Users can view own tokens" on public.tokens
   for select using (auth.uid() = user_id);
 
+drop policy if exists "Users can update own tokens" on public.tokens;
 create policy "Users can update own tokens" on public.tokens
   for update using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert own tokens" on public.tokens;
 create policy "Users can insert own tokens" on public.tokens
   for insert with check (auth.uid() = user_id);
 
@@ -65,9 +70,11 @@ create table if not exists public.documents (
 
 alter table public.documents enable row level security;
 
+drop policy if exists "Users can CRUD own documents" on public.documents;
 create policy "Users can CRUD own documents" on public.documents
   for all using (auth.uid() = user_id);
 
+drop policy if exists "Public documents are readable by all" on public.documents;
 create policy "Public documents are readable by all" on public.documents
   for select using (is_public = true);
 
@@ -84,6 +91,7 @@ create table if not exists public.document_versions (
 
 alter table public.document_versions enable row level security;
 
+drop policy if exists "Users can view own document versions" on public.document_versions;
 create policy "Users can view own document versions" on public.document_versions
   for select using (
     exists (
@@ -92,6 +100,7 @@ create policy "Users can view own document versions" on public.document_versions
     )
   );
 
+drop policy if exists "Users can insert own document versions" on public.document_versions;
 create policy "Users can insert own document versions" on public.document_versions
   for insert with check (
     exists (
@@ -117,8 +126,59 @@ create table if not exists public.templates (
 
 alter table public.templates enable row level security;
 
+drop policy if exists "Templates are readable by all authenticated users" on public.templates;
 create policy "Templates are readable by all authenticated users" on public.templates
   for select using (auth.uid() is not null);
+
+-- ============================================
+-- PAYMENT SUBMISSIONS
+-- ============================================
+create table if not exists public.payment_submissions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.users(id) on delete cascade not null,
+  payment_type text not null check (payment_type in ('plan', 'tokens')),
+  plan text check (plan in ('free', 'pro', 'premium')),
+  token_amount integer,
+  rupee_amount integer not null check (rupee_amount > 0),
+  upi_id text not null,
+  upi_name text,
+  reference_note text,
+  admin_note text,
+  status text not null default 'pending' check (status in ('pending', 'confirmed', 'rejected')),
+  reviewed_at timestamptz,
+  reviewed_by uuid references public.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.payment_submissions
+  add column if not exists payment_type text,
+  add column if not exists plan text,
+  add column if not exists token_amount integer,
+  add column if not exists rupee_amount integer,
+  add column if not exists upi_id text,
+  add column if not exists upi_name text,
+  add column if not exists reference_note text,
+  add column if not exists admin_note text,
+  add column if not exists status text default 'pending',
+  add column if not exists reviewed_at timestamptz,
+  add column if not exists reviewed_by uuid references public.users(id) on delete set null,
+  add column if not exists created_at timestamptz default now(),
+  add column if not exists updated_at timestamptz default now();
+
+update public.payment_submissions
+set status = 'pending'
+where status is null;
+
+alter table public.payment_submissions enable row level security;
+
+drop policy if exists "Users can create own payment submissions" on public.payment_submissions;
+create policy "Users can create own payment submissions" on public.payment_submissions
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can view own payment submissions" on public.payment_submissions;
+create policy "Users can view own payment submissions" on public.payment_submissions
+  for select using (auth.uid() = user_id);
 
 -- ============================================
 -- AUTO-UPDATE UPDATED_AT TRIGGER
@@ -131,13 +191,20 @@ begin
 end;
 $$ language plpgsql;
 
+drop trigger if exists users_updated_at on public.users;
 create trigger users_updated_at before update on public.users
   for each row execute procedure public.handle_updated_at();
 
+drop trigger if exists documents_updated_at on public.documents;
 create trigger documents_updated_at before update on public.documents
   for each row execute procedure public.handle_updated_at();
 
+drop trigger if exists tokens_updated_at on public.tokens;
 create trigger tokens_updated_at before update on public.tokens
+  for each row execute procedure public.handle_updated_at();
+
+drop trigger if exists payment_submissions_updated_at on public.payment_submissions;
+create trigger payment_submissions_updated_at before update on public.payment_submissions
   for each row execute procedure public.handle_updated_at();
 
 -- ============================================
@@ -158,6 +225,7 @@ begin
 end;
 $$ language plpgsql security definer;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();

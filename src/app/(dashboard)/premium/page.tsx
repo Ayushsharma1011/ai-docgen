@@ -1,15 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { Check, Coins, Copy, Crown, ExternalLink, Shield, Star, X, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { Check, Coins, Crown, Shield, Star, Zap } from "lucide-react";
 import { requestJson } from "@/lib/client-api";
+
+type PaymentSheet = {
+  label: string;
+  paymentType: "plan" | "tokens";
+  plan: "free" | "pro" | "premium" | null;
+  tokenAmount: number | null;
+  amount: number;
+  amountDisplay: string;
+  payee: string;
+  upiId: string;
+  upiName: string;
+  paymentUrl: string;
+  qrUrl: string;
+  note: string;
+};
 
 const PLANS = [
   {
     name: "Free",
     price: "\u20b90",
+    amount: 0,
     period: "/month",
     tokens: "10 tokens",
     grad: "linear-gradient(135deg,#64748b,#475569)",
@@ -29,6 +45,7 @@ const PLANS = [
   {
     name: "Pro",
     price: "\u20b9500",
+    amount: 500,
     period: "/month",
     tokens: "100 tokens",
     grad: "linear-gradient(135deg,#2563eb,#7c3aed)",
@@ -44,12 +61,13 @@ const PLANS = [
       "Better export workflow",
     ],
     disabled: [],
-    cta: "Upgrade to Pro",
+    cta: "Pay for Pro",
     action: { type: "plan" as const, plan: "pro" as const },
   },
   {
     name: "Premium",
     price: "\u20b91000",
+    amount: 1000,
     period: "/month",
     tokens: "Unlimited",
     grad: "linear-gradient(135deg,#f59e0b,#f97316)",
@@ -65,36 +83,89 @@ const PLANS = [
       "Dedicated support",
     ],
     disabled: [],
-    cta: "Go Premium",
+    cta: "Pay for Premium",
     action: { type: "plan" as const, plan: "premium" as const },
   },
 ];
 
 const TOKEN_PACKS = [
-  { amount: 20, price: "$3", label: "Starter Pack" },
-  { amount: 60, price: "$8", label: "Value Pack", popular: true },
-  { amount: 150, price: "$18", label: "Power Pack" },
+  { amount: 20, price: "\u20b999", rupeeAmount: 99, label: "Starter Pack" },
+  { amount: 60, price: "\u20b9299", rupeeAmount: 299, label: "Value Pack", popular: true },
+  { amount: 150, price: "\u20b9699", rupeeAmount: 699, label: "Power Pack" },
 ];
 
 export default function PremiumPage() {
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [paymentSheet, setPaymentSheet] = useState<PaymentSheet | null>(null);
+  const [submittingPayment, setSubmittingPayment] = useState(false);
+  const [referenceNote, setReferenceNote] = useState("");
 
-  async function startCheckout(payload: { type: "tokens" | "plan"; amount?: number; plan?: "free" | "pro" | "premium" }) {
+  const appLinks = useMemo(() => {
+    if (!paymentSheet) return [];
+    return [
+      { label: "Open UPI App", href: paymentSheet.paymentUrl },
+      { label: "Google Pay", href: paymentSheet.paymentUrl },
+      { label: "PhonePe", href: paymentSheet.paymentUrl },
+      { label: "Paytm", href: paymentSheet.paymentUrl },
+    ];
+  }, [paymentSheet]);
+
+  async function openPaymentSheet(payload: { type: "tokens" | "plan"; amount?: number; plan?: "free" | "pro" | "premium" }) {
     const key = `${payload.type}-${payload.plan || payload.amount}`;
     setLoadingKey(key);
 
     try {
-      const data = await requestJson<{ message?: string }>("/api/stripe/checkout", {
+      const data = await requestJson<PaymentSheet>("/api/payments/upi", {
         method: "POST",
         json: payload,
       });
 
-      toast.info(data.message || "Checkout is not configured yet.");
+      setPaymentSheet(data);
+      toast.success("UPI payment details ready.");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to start checkout.";
+      const message = error instanceof Error ? error.message : "Unable to create payment link.";
       toast.error(message);
     } finally {
       setLoadingKey(null);
+    }
+  }
+
+  async function copyText(value: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success(`${label} copied.`);
+    } catch {
+      toast.error(`Unable to copy ${label.toLowerCase()}.`);
+    }
+  }
+
+  async function submitPaymentClaim() {
+    if (!paymentSheet) return;
+
+    setSubmittingPayment(true);
+
+    try {
+      const data = await requestJson<{ message: string }>("/api/payments/submit", {
+        method: "POST",
+        json: {
+          payment_type: paymentSheet.paymentType,
+          plan: paymentSheet.plan,
+          token_amount: paymentSheet.tokenAmount,
+          rupee_amount: paymentSheet.amount,
+          upi_id: paymentSheet.upiId,
+          upi_name: paymentSheet.upiName,
+          reference_note: referenceNote,
+        },
+      });
+
+      toast.success(data.message);
+      setPaymentSheet(null);
+      setReferenceNote("");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to submit payment claim.";
+      toast.error(message);
+    } finally {
+      setSubmittingPayment(false);
     }
   }
 
@@ -102,11 +173,11 @@ export default function PremiumPage() {
     <div className="mx-auto max-w-7xl px-6 py-8 md:px-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
         <div className="glass-panel mb-6 inline-flex items-center gap-2 rounded-full border-amber-500/25 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-300">
-          <Crown className="h-4 w-4" /> Upgrade your workspace
+          <Crown className="h-4 w-4" /> UPI payments enabled
         </div>
         <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">Choose the right plan for your team</h1>
         <p className="mx-auto mt-3 max-w-2xl text-lg text-white/45">
-          Unlock better exports, more AI capacity, and collaboration-friendly workflows as your document volume grows.
+          Pay directly with UPI for now. Open Google Pay, PhonePe, Paytm, or scan the QR from any UPI app.
         </p>
       </motion.div>
 
@@ -120,7 +191,7 @@ export default function PremiumPage() {
             className={`relative flex min-h-[720px] flex-col rounded-[30px] border p-8 ${
               plan.popular
                 ? "border-blue-400/45 bg-[linear-gradient(180deg,rgba(21,33,64,0.92),rgba(10,16,31,0.96))] shadow-[0_28px_80px_rgba(37,99,235,0.2)]"
-                : "bg-[linear-gradient(180deg,rgba(18,24,39,0.88),rgba(10,14,28,0.94))] border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
+                : "border-white/10 bg-[linear-gradient(180deg,rgba(18,24,39,0.88),rgba(10,14,28,0.94))] shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
             }`}
           >
             <div className="pointer-events-none absolute inset-0 rounded-[30px] border border-white/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),transparent_26%)]" />
@@ -177,7 +248,7 @@ export default function PremiumPage() {
                       toast.info("You are already on the free plan.");
                       return;
                     }
-                    void startCheckout(plan.action);
+                    void openPaymentSheet(plan.action);
                   }}
                   className={`w-full rounded-[18px] px-4 py-4 text-base font-semibold ${
                     plan.action.plan === "free"
@@ -189,7 +260,7 @@ export default function PremiumPage() {
                   style={plan.popular ? { color: "#020617" } : undefined}
                   disabled={loadingKey === `plan-${plan.action.plan}`}
                 >
-                  {loadingKey === `plan-${plan.action.plan}` ? "Preparing checkout..." : plan.cta}
+                  {loadingKey === `plan-${plan.action.plan}` ? "Preparing payment..." : plan.cta}
                 </button>
               </div>
             </div>
@@ -218,11 +289,11 @@ export default function PremiumPage() {
               <p className="mt-3 text-2xl font-semibold text-blue-300">{pack.price}</p>
               <button
                 type="button"
-                onClick={() => void startCheckout({ type: "tokens", amount: pack.amount })}
-                className="glass-button mt-4 w-full rounded-2xl px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-white/[0.08]"
+                onClick={() => void openPaymentSheet({ type: "tokens", amount: pack.amount })}
+                className="glass-button mt-4 w-full rounded-2xl px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/[0.08]"
                 disabled={loadingKey === `tokens-${pack.amount}`}
               >
-                {loadingKey === `tokens-${pack.amount}` ? "Preparing..." : "Buy tokens"}
+                {loadingKey === `tokens-${pack.amount}` ? "Preparing..." : "Pay with UPI"}
               </button>
             </div>
           ))}
@@ -230,9 +301,171 @@ export default function PremiumPage() {
 
         <p className="mt-4 text-center text-xs text-white/28">
           <Shield className="mr-1 inline h-3 w-3" />
-          Stripe checkout can be enabled later by adding `STRIPE_SECRET_KEY` and the webhook configuration.
+          After receiving payment, the admin can confirm and update tokens or plans from the admin payment panel.
         </p>
       </motion.div>
+
+      {paymentSheet && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+          <div className="glass-shell relative flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-[30px]">
+            <button
+              type="button"
+              onClick={() => setPaymentSheet(null)}
+              className="glass-button absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-white"
+              aria-label="Close payment sheet"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="border-b border-white/8 px-6 pb-5 pt-6 md:px-8">
+              <div className="pr-14">
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-200/80">UPI Payment</p>
+                <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-white md:text-3xl">{paymentSheet.label}</h3>
+                    <p className="mt-2 max-w-2xl text-sm leading-7 text-white/55">
+                      Scan the QR or open your preferred UPI app. After payment, submit the note below so the admin can verify and confirm it from the payment panel.
+                    </p>
+                  </div>
+                  <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-3 text-left md:min-w-[220px] md:text-right">
+                    <p className="text-xs uppercase tracking-[0.18em] text-white/40">Amount to Pay</p>
+                    <p className="mt-1 text-3xl font-semibold text-white">{paymentSheet.amountDisplay}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="overflow-y-auto px-6 py-6 md:px-8">
+              <div className="grid gap-6 md:grid-cols-[0.92fr_1.08fr]">
+                <div className="space-y-4">
+                  <div className="glass-panel rounded-[26px] p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-200/80">Scan and pay</p>
+                    <p className="mt-2 text-sm leading-7 text-white/50">Best for desktop or when the UPI app is on another phone.</p>
+
+                    <div className="mt-5 rounded-[24px] bg-white p-4 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
+                      <img
+                        src={paymentSheet.qrUrl}
+                        alt={`UPI QR for ${paymentSheet.label}`}
+                        className="mx-auto aspect-square w-full max-w-[280px] rounded-2xl object-contain"
+                      />
+                    </div>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-white/40">Payee</p>
+                        <p className="mt-2 text-sm font-medium text-white">{paymentSheet.payee}</p>
+                      </div>
+                      <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-white/40">UPI ID</p>
+                        <p className="mt-2 break-all text-sm font-medium text-white">{paymentSheet.upiId}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <div className="glass-panel rounded-[26px] p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-200/80">Direct payment</p>
+                    <h3 className="mt-3 text-xl font-semibold text-white">Open your UPI app</h3>
+                    <p className="mt-2 text-sm leading-7 text-white/50">On mobile, tap one of these to continue in Google Pay, PhonePe, Paytm, or any default UPI app.</p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      {appLinks.map((app) => (
+                        <a
+                          key={app.label}
+                          href={app.href}
+                          className="glass-button inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white"
+                        >
+                          {app.label}
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="glass-panel rounded-[26px] p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-200/80">Copy details</p>
+                    <div className="mt-4 space-y-3">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-xs uppercase tracking-[0.18em] text-white/40">UPI ID</p>
+                            <p className="mt-2 break-all text-sm font-medium text-white">{paymentSheet.upiId}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => void copyText(paymentSheet.upiId, "UPI ID")}
+                            className="glass-button inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-white"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-xs uppercase tracking-[0.18em] text-white/40">Payment Link</p>
+                            <p className="mt-2 break-all text-sm font-medium text-white/80">
+                              Use this if you want to paste the UPI payment link manually into another app or device.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => void copyText(paymentSheet.paymentUrl, "payment link")}
+                            className="glass-button inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-white"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                            Copy Link
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="glass-panel rounded-[26px] p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-200/80">Payment Confirmation</p>
+                    <p className="mt-3 text-sm leading-7 text-white/55">
+                      After payment, submit a short note so the transaction can be checked and your plan or tokens can be activated.
+                    </p>
+                    <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
+                      Optional note
+                    </label>
+                    <textarea
+                      value={referenceNote}
+                      onChange={(event) => setReferenceNote(event.target.value)}
+                      placeholder="Add payer name, last 4 digits, screenshot note, or any payment reference"
+                      className="mt-2 min-h-[120px] w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-white/28"
+                    />
+                    <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                      <button
+                        type="button"
+                        onClick={() => void submitPaymentClaim()}
+                        className="glass-button glass-button-primary flex-1 rounded-2xl px-4 py-3 text-sm font-semibold text-[#020617]"
+                        style={{ color: "#020617" }}
+                        disabled={submittingPayment}
+                      >
+                        {submittingPayment ? "Submitting..." : "I have paid"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentSheet(null)}
+                        className="glass-button flex-1 rounded-2xl px-4 py-3 text-sm font-semibold text-white"
+                      >
+                        Close
+                      </button>
+                    </div>
+                    <p className="mt-3 text-xs leading-6 text-white/35">
+                      {paymentSheet.note}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

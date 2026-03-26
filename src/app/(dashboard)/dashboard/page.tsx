@@ -17,6 +17,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useLiveAccount } from "@/hooks/use-live-account";
 import type { Document } from "@/types";
 import { DOC_TYPE_ICONS, DOC_TYPE_LABELS, formatDate } from "@/lib/utils";
 
@@ -29,10 +30,9 @@ const QUICK_CREATE = [
 
 export default function DashboardPage() {
   const [docs, setDocs] = useState<Document[]>([]);
-  const [tokens, setTokens] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("there");
   const [dashboardLoadedAt] = useState(() => Date.now());
+  const { tokens, fullName, email } = useLiveAccount();
 
   useEffect(() => {
     async function load() {
@@ -46,20 +46,21 @@ export default function DashboardPage() {
         return;
       }
 
-      const [docsResult, tokenResult, profileResult] = await Promise.all([
-        supabase.from("documents").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(6),
-        supabase.from("tokens").select("balance").eq("user_id", user.id).single(),
-        supabase.from("users").select("full_name, plan").eq("id", user.id).single(),
-      ]);
+      const { data: docsResultData } = await supabase
+        .from("documents")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(6);
 
-      setDocs(docsResult.data || []);
-      setTokens(tokenResult.data?.balance ?? 0);
-      setUserName(profileResult.data?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there");
+      setDocs(docsResultData || []);
       setLoading(false);
     }
 
     load();
   }, []);
+
+  const userName = fullName?.split(" ")[0] || email.split("@")[0] || "there";
 
   const documentsThisMonth = useMemo(() => {
     const thirtyDaysAgo = new Date(dashboardLoadedAt - 30 * 86400000);
@@ -110,7 +111,7 @@ export default function DashboardPage() {
       >
         {[
           { label: "Total documents", value: docs.length, icon: FileText, iconBg: "rgba(59,130,246,0.12)", iconColor: "#60a5fa" },
-          { label: "Token balance", value: tokens, icon: Coins, iconBg: "rgba(234,179,8,0.12)", iconColor: "#facc15" },
+          { label: "Token balance", value: tokens ?? 0, icon: Coins, iconBg: "rgba(234,179,8,0.12)", iconColor: "#facc15" },
           { label: "Created this month", value: documentsThisMonth, icon: TrendingUp, iconBg: "rgba(16,185,129,0.12)", iconColor: "#34d399" },
           { label: "Upgrade options", value: "Pro", icon: Crown, iconBg: "rgba(245,158,11,0.12)", iconColor: "#fbbf24" },
         ].map((stat) => (

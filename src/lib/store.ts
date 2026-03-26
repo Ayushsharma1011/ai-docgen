@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Document, DocumentType, DocumentTone } from '@/types';
+import type { NormalizedGeneratedContent } from '@/lib/format-content';
 
 interface EditorState {
   // Current document
@@ -9,6 +10,7 @@ interface EditorState {
   isSaving: boolean;
   aiSuggestions: string[];
   showSuggestionsPanel: boolean;
+  structuredOutput: NormalizedGeneratedContent | null;
 
   // Generation form
   topic: string;
@@ -24,6 +26,7 @@ interface EditorState {
   setIsSaving: (val: boolean) => void;
   setAISuggestions: (suggestions: string[]) => void;
   setShowSuggestionsPanel: (val: boolean) => void;
+  setStructuredOutput: (content: NormalizedGeneratedContent | null) => void;
   setTopic: (val: string | ((current: string) => string)) => void;
   setInstructions: (val: string | ((current: string) => string)) => void;
   setRequirements: (val: string | ((current: string) => string)) => void;
@@ -39,6 +42,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   isSaving: false,
   aiSuggestions: [],
   showSuggestionsPanel: false,
+  structuredOutput: null,
   topic: '',
   instructions: '',
   requirements: '',
@@ -51,6 +55,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setIsSaving: (val) => set({ isSaving: val }),
   setAISuggestions: (suggestions) => set({ aiSuggestions: suggestions }),
   setShowSuggestionsPanel: (val) => set({ showSuggestionsPanel: val }),
+  setStructuredOutput: (content) => set({ structuredOutput: content }),
   setTopic: (val) => set((state) => ({ topic: typeof val === "function" ? val(state.topic) : val })),
   setInstructions: (val) =>
     set((state) => ({ instructions: typeof val === "function" ? val(state.instructions) : val })),
@@ -66,6 +71,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       docType: 'docx',
       tone: 'professional',
       editorContent: '',
+      structuredOutput: null,
       currentDoc: null,
       aiSuggestions: [],
     }),

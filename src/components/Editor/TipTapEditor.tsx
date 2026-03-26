@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import styles from "./TipTapEditor.module.css";
+import type { DocumentType } from "@/types";
 
 interface TipTapEditorProps {
   content: string;
@@ -37,6 +38,7 @@ interface TipTapEditorProps {
   onSelectionChange?: (selectedText: string) => void;
   placeholder?: string;
   editorRef?: React.MutableRefObject<Editor | null>;
+  mode?: DocumentType;
 }
 
 interface ToolbarButtonProps {
@@ -77,6 +79,7 @@ export default function TipTapEditor({
   onSelectionChange,
   placeholder,
   editorRef,
+  mode = "docx",
 }: TipTapEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -128,6 +131,17 @@ export default function TipTapEditor({
 
   return (
     <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between gap-3 border-b border-white/7 bg-[#0f1424]/90 px-3 py-3">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
+          {mode === "docx"
+            ? "Word tools"
+            : mode === "pdf"
+              ? "PDF layout tools"
+              : mode === "pptx"
+                ? "Presentation copy tools"
+                : "Spreadsheet notes tools"}
+        </div>
+      </div>
       <div className="flex flex-wrap items-center gap-2 border-b border-white/7 bg-[#0f1424]/90 px-3 py-3">
         <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Undo">
           <Undo className="h-4 w-4" />
@@ -206,7 +220,13 @@ export default function TipTapEditor({
         </ToolbarButton>
       </div>
 
-      <div className={cn(styles.editorSurface, "min-h-0 flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.08),transparent_28%),linear-gradient(180deg,#09101c_0%,#07070f_100%)]")}>
+      <div
+        data-mode={mode}
+        className={cn(
+          styles.editorSurface,
+          "min-h-0 flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.08),transparent_28%),linear-gradient(180deg,#09101c_0%,#07070f_100%)]",
+        )}
+      >
         <EditorContent editor={editor} />
       </div>
     </div>

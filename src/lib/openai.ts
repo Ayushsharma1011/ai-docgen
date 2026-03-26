@@ -88,12 +88,20 @@ Return only valid JSON in this shape:
       "title": "Slide Title",
       "content": "Main content paragraph",
       "bullets": ["Point 1", "Point 2"],
+      "notes": "Optional short speaker notes",
       "slideType": "title|content|bullets|conclusion"
     }
   ]
 }
 
-Include 8 to 12 slides. Make the first slide "title" and the final slide "conclusion".`;
+Rules:
+- Include 8 to 12 slides.
+- Make the first slide "title" and the final slide "conclusion".
+- Keep each slide focused on one idea.
+- Keep bullets short: maximum 5 bullets per slide, maximum 12 words per bullet.
+- Use concise presenter-friendly content, not long essay paragraphs.
+- Ensure the deck flows logically from overview to insights to conclusion.
+- Do not include markdown fences, commentary, or extra keys.`;
   }
 
   if (docType === "xlsx") {
@@ -117,7 +125,14 @@ Return only valid JSON in this shape:
   ]
 }
 
-Include 2 to 3 sheets with realistic, meaningful data that is suitable for charting.`;
+Rules:
+- Include 2 to 4 sheets with realistic, meaningful data.
+- Keep every row the same length as the headers.
+- Prefer numeric values where charts or comparisons make sense.
+- Use practical business, academic, operational, or analytical data depending on the prompt.
+- Do not leave rows empty and do not mix incompatible data types in the same column unless clearly justified.
+- Add a chart type only when the data is actually suitable for charting.
+- Do not include markdown fences, commentary, or extra keys.`;
   }
 
   return `You are an expert ${tone} document writer.
@@ -143,7 +158,14 @@ Return only valid JSON in this shape:
   }
 }
 
-Include 5 to 8 well-developed sections with substantial content.`;
+Rules:
+- Include 5 to 8 well-developed sections with substantial content.
+- Write polished, publication-ready prose.
+- Use bullets only when they improve clarity.
+- Make headings specific and professional, not generic.
+- For PDF-style reports, sound more report-like and insight-driven.
+- For Word-style documents, sound more document-like and editable.
+- Do not include markdown fences, commentary, or extra keys.`;
 }
 
 export function buildResumePrompt(

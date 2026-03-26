@@ -30,4 +30,4 @@ if (-not $serviceRunning) {
 
 Write-Host "Starting Next.js dev server..."
 Set-Location $projectRoot
-npm run dev
+npm run dev:web

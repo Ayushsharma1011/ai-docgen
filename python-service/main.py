@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Union
 import io
 
-from routers import word, pdf, pptx, excel
+from routers import word, pdf, pptx, excel, converter
 
 app = FastAPI(
     title="DocGenius AI - Document Generation Service",
@@ -33,6 +33,7 @@ app.include_router(word.router, prefix="/generate")
 app.include_router(pdf.router, prefix="/generate")
 app.include_router(pptx.router, prefix="/generate")
 app.include_router(excel.router, prefix="/generate")
+app.include_router(converter.router)
 
 
 @app.get("/health")
@@ -49,5 +50,6 @@ async def root():
             "POST /generate/pdf",
             "POST /generate/pptx",
             "POST /generate/xlsx",
+            "POST /convert",
         ],
     }

@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "powershell -ExecutionPolicy Bypass -NoProfile -File .\\scripts\\start-dev.ps1",
+    "dev:web": "next dev",
     "dev:python": "powershell -ExecutionPolicy Bypass -NoProfile -File .\\scripts\\start-python-service.ps1",
     "dev:full": "powershell -ExecutionPolicy Bypass -NoProfile -File .\\scripts\\start-dev.ps1",
     "build": "next build",

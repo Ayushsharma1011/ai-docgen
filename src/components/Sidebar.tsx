@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -75,13 +76,13 @@ export default function Sidebar() {
           href="/"
           className={`flex items-center gap-3 rounded-2xl transition-opacity hover:opacity-90 ${collapsed ? "justify-center" : ""}`}
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_10px_28px_rgba(37,99,235,0.28)]">
-            <Sparkles className="h-5 w-5 text-white" />
+          <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_10px_28px_rgba(37,99,235,0.28)]">
+            <Image src="/docgenius-logo.svg" alt="DocGenius AI logo" fill className="object-cover" />
           </div>
           {!collapsed && (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">DocGenius AI</p>
-              <p className="text-xs text-white/40">Document workspace</p>
+              <p className="text-xs text-white/40">Powered by Kreativan Technologies</p>
             </div>
           )}
         </Link>
@@ -150,6 +151,7 @@ export default function Sidebar() {
             </Link>
           </div>
         )}
+
       </div>
 
       <div className={`border-t border-white/8 px-3 py-4 ${collapsed ? "flex justify-center" : ""}`}>

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const DEFAULT_USD_TO_INR_RATE = 83;
+
 const PLAN_PRICING = {
   pro: { amount: 500, label: "Pro Plan" },
   premium: { amount: 1000, label: "Premium Plan" },
@@ -46,6 +48,11 @@ function buildPaymentDetails(payload: { type: "tokens" | "plan"; amount?: number
   };
 }
 
+function getUsdToInrRate() {
+  const value = Number(process.env.NEXT_PUBLIC_USD_TO_INR_RATE ?? process.env.USD_TO_INR_RATE ?? DEFAULT_USD_TO_INR_RATE);
+  return Number.isFinite(value) && value > 0 ? value : DEFAULT_USD_TO_INR_RATE;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -79,6 +86,8 @@ export async function POST(req: NextRequest) {
     }
 
     const details = buildPaymentDetails({ type, amount, plan });
+    const usdToInrRate = getUsdToInrRate();
+    const usdAmount = Number((details.amount / usdToInrRate).toFixed(2));
     const txNote = `${details.note} - ${user.id.slice(0, 8)}`;
 
     const params = new URLSearchParams({
@@ -99,6 +108,9 @@ export async function POST(req: NextRequest) {
       tokenAmount: type === "tokens" ? amount ?? null : null,
       amount: details.amount,
       amountDisplay: `\u20b9${details.amount}`,
+      usdAmount,
+      usdAmountDisplay: `$${usdAmount.toFixed(2)}`,
+      exchangeRate: usdToInrRate,
       payee,
       upiId,
       upiName: payee,

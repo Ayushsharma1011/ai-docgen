@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -17,6 +18,13 @@ import {
   Zap,
 } from "lucide-react";
 import AuthStatus from "@/components/AuthStatus";
+
+const DEFAULT_USD_TO_INR_RATE = Number(process.env.NEXT_PUBLIC_USD_TO_INR_RATE ?? 83);
+
+function formatUsdFromInr(inr: number) {
+  const rate = Number.isFinite(DEFAULT_USD_TO_INR_RATE) && DEFAULT_USD_TO_INR_RATE > 0 ? DEFAULT_USD_TO_INR_RATE : 83;
+  return `$${(inr / rate).toFixed(2)}`;
+}
 
 const documentTypes = [
   {
@@ -99,7 +107,7 @@ const steps = [
 const plans = [
   {
     name: "Free",
-    price: "₹0",
+    price: "$0",
     description: "Best for trying the workflow and creating a few core documents.",
     cta: "Start free",
     featured: false,
@@ -107,7 +115,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "₹500",
+    price: formatUsdFromInr(500),
     description: "For professionals who need more formats, more AI, and faster output.",
     cta: "Upgrade to Pro",
     featured: true,
@@ -115,7 +123,7 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "₹1000",
+    price: formatUsdFromInr(1000),
     description: "For teams or high-volume creators who want the most flexibility.",
     cta: "Go Premium",
     featured: false,
@@ -131,12 +139,12 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 border-b border-white/8 bg-[#07070f]/45 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 md:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_12px_40px_rgba(37,99,235,0.35)]">
-              <Sparkles className="h-5 w-5 text-white" />
+            <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-[0_12px_40px_rgba(37,99,235,0.35)]">
+              <Image src="/docgenius-logo.svg" alt="DocGenius AI logo" fill className="object-cover" />
             </div>
             <div>
               <p className="text-sm font-semibold tracking-tight">DocGenius AI</p>
-              <p className="text-xs text-white/40">AI document workspace</p>
+              <p className="text-xs text-white/40">Powered by Kreativan Technologies</p>
             </div>
           </Link>
 
@@ -163,6 +171,15 @@ export default function LandingPage() {
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 Better docs, less busywork
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.03 }}
+                className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] text-white/70"
+              >
+                Powered by Kreativan Technologies
               </motion.div>
 
               <motion.h1
@@ -434,15 +451,15 @@ export default function LandingPage() {
       <footer className="border-t border-white/8 px-6 py-8 md:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 text-sm text-white/40 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)]">
-              <Sparkles className="h-4 w-4 text-white" />
+            <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#2563eb,#7c3aed)]">
+              <Image src="/docgenius-logo.svg" alt="DocGenius AI logo" fill className="object-cover" />
             </div>
             <div>
               <p className="font-medium text-white/75">DocGenius AI</p>
-              <p>AI-powered document workspace</p>
+              <p>Powered by Kreativan Technologies</p>
             </div>
           </div>
-          <p>Built for cleaner document creation, editing, and export.</p>
+          <p>Built for cleaner document creation, research, conversion, editing, and export.</p>
         </div>
       </footer>
     </div>

@@ -13,6 +13,9 @@ type PaymentSheet = {
   tokenAmount: number | null;
   amount: number;
   amountDisplay: string;
+  usdAmount: number;
+  usdAmountDisplay: string;
+  exchangeRate: number;
   payee: string;
   upiId: string;
   upiName: string;
@@ -21,10 +24,17 @@ type PaymentSheet = {
   note: string;
 };
 
+const DEFAULT_USD_TO_INR_RATE = Number(process.env.NEXT_PUBLIC_USD_TO_INR_RATE ?? 83);
+
+function formatUsdFromInr(inr: number) {
+  const rate = Number.isFinite(DEFAULT_USD_TO_INR_RATE) && DEFAULT_USD_TO_INR_RATE > 0 ? DEFAULT_USD_TO_INR_RATE : 83;
+  return `$${(inr / rate).toFixed(2)}`;
+}
+
 const PLANS = [
   {
     name: "Free",
-    price: "\u20b90",
+    price: "$0",
     amount: 0,
     period: "/month",
     tokens: "10 tokens",
@@ -44,7 +54,7 @@ const PLANS = [
   },
   {
     name: "Pro",
-    price: "\u20b9500",
+    price: formatUsdFromInr(500),
     amount: 500,
     period: "/month",
     tokens: "100 tokens",
@@ -66,7 +76,7 @@ const PLANS = [
   },
   {
     name: "Premium",
-    price: "\u20b91000",
+    price: formatUsdFromInr(1000),
     amount: 1000,
     period: "/month",
     tokens: "Unlimited",
@@ -89,9 +99,9 @@ const PLANS = [
 ];
 
 const TOKEN_PACKS = [
-  { amount: 20, price: "\u20b999", rupeeAmount: 99, label: "Starter Pack" },
-  { amount: 60, price: "\u20b9299", rupeeAmount: 299, label: "Value Pack", popular: true },
-  { amount: 150, price: "\u20b9699", rupeeAmount: 699, label: "Power Pack" },
+  { amount: 20, price: formatUsdFromInr(99), rupeeAmount: 99, label: "Starter Pack" },
+  { amount: 60, price: formatUsdFromInr(299), rupeeAmount: 299, label: "Value Pack", popular: true },
+  { amount: 150, price: formatUsdFromInr(699), rupeeAmount: 699, label: "Power Pack" },
 ];
 
 export default function PremiumPage() {
@@ -177,7 +187,7 @@ export default function PremiumPage() {
         </div>
         <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">Choose the right plan for your team</h1>
         <p className="mx-auto mt-3 max-w-2xl text-lg text-white/45">
-          Pay directly with UPI for now. Open Google Pay, PhonePe, Paytm, or scan the QR from any UPI app.
+          Prices are shown in USD for clarity. At payment time, we show the INR amount to pay through UPI along with the conversion.
         </p>
       </motion.div>
 
@@ -324,12 +334,14 @@ export default function PremiumPage() {
                   <div>
                     <h3 className="text-2xl font-semibold text-white md:text-3xl">{paymentSheet.label}</h3>
                     <p className="mt-2 max-w-2xl text-sm leading-7 text-white/55">
-                      Scan the QR or open your preferred UPI app. After payment, submit the note below so the admin can verify and confirm it from the payment panel.
+                      Scan the QR or open your preferred UPI app. Prices are shown in USD across the product, and here you can see the converted INR amount you need to pay through UPI. After payment, submit the note below so the admin can verify and confirm it from the payment panel.
                     </p>
                   </div>
                   <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-3 text-left md:min-w-[220px] md:text-right">
-                    <p className="text-xs uppercase tracking-[0.18em] text-white/40">Amount to Pay</p>
-                    <p className="mt-1 text-3xl font-semibold text-white">{paymentSheet.amountDisplay}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-white/40">USD Price</p>
+                    <p className="mt-1 text-3xl font-semibold text-white">{paymentSheet.usdAmountDisplay}</p>
+                    <p className="mt-2 text-sm font-medium text-blue-200">Pay via UPI: {paymentSheet.amountDisplay}</p>
+                    <p className="mt-1 text-xs text-white/40">1 USD = Rs.{paymentSheet.exchangeRate}</p>
                   </div>
                 </div>
               </div>
@@ -341,6 +353,11 @@ export default function PremiumPage() {
                   <div className="glass-panel rounded-[26px] p-5">
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-200/80">Scan and pay</p>
                     <p className="mt-2 text-sm leading-7 text-white/50">Best for desktop or when the UPI app is on another phone.</p>
+                    <div className="mt-4 rounded-2xl border border-blue-400/15 bg-blue-400/[0.05] px-4 py-3 text-sm text-white/70">
+                      USD price: <span className="font-semibold text-white">{paymentSheet.usdAmountDisplay}</span>
+                      {" "} | {" "}
+                      UPI payment amount: <span className="font-semibold text-white">{paymentSheet.amountDisplay}</span>
+                    </div>
 
                     <div className="mt-5 rounded-[24px] bg-white p-4 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
                       <img

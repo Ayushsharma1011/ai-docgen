@@ -1,0 +1,18 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="24" y1="20" x2="132" y2="140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="spark" x1="52" y1="40" x2="109" y2="105" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#BFDBFE"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="128" height="128" rx="36" fill="url(#bg)"/>
+  <path d="M61.5 43.5C62.4 43.5 63.2 44.1 63.4 45L66.1 55.9C66.4 57.3 67.5 58.4 68.9 58.7L79.8 61.4C80.7 61.6 81.3 62.4 81.3 63.3C81.3 64.2 80.7 65 79.8 65.2L68.9 67.9C67.5 68.2 66.4 69.3 66.1 70.7L63.4 81.6C63.2 82.5 62.4 83.1 61.5 83.1C60.6 83.1 59.8 82.5 59.6 81.6L56.9 70.7C56.6 69.3 55.5 68.2 54.1 67.9L43.2 65.2C42.3 65 41.7 64.2 41.7 63.3C41.7 62.4 42.3 61.6 43.2 61.4L54.1 58.7C55.5 58.4 56.6 57.3 56.9 55.9L59.6 45C59.8 44.1 60.6 43.5 61.5 43.5Z" fill="url(#spark)"/>
+  <path d="M99.4 66.2C100.1 66.2 100.7 66.7 100.9 67.4L102.3 73.1C102.5 74 103.2 74.7 104.1 74.9L109.8 76.3C110.5 76.5 111 77.1 111 77.8C111 78.5 110.5 79.1 109.8 79.3L104.1 80.7C103.2 80.9 102.5 81.6 102.3 82.5L100.9 88.2C100.7 88.9 100.1 89.4 99.4 89.4C98.7 89.4 98.1 88.9 97.9 88.2L96.5 82.5C96.3 81.6 95.6 80.9 94.7 80.7L89 79.3C88.3 79.1 87.8 78.5 87.8 77.8C87.8 77.1 88.3 76.5 89 76.3L94.7 74.9C95.6 74.7 96.3 74 96.5 73.1L97.9 67.4C98.1 66.7 98.7 66.2 99.4 66.2Z" fill="#E0E7FF"/>
+  <path d="M56 103C56 97.4772 60.4772 93 66 93H93C98.5228 93 103 97.4772 103 103V104C103 109.523 98.5228 114 93 114H66C60.4772 114 56 109.523 56 104V103Z" fill="white" fill-opacity="0.16"/>
+  <path d="M66 99.5H93" stroke="white" stroke-width="5" stroke-linecap="round"/>
+  <path d="M66 107.5H84" stroke="white" stroke-width="5" stroke-linecap="round"/>
+</svg>

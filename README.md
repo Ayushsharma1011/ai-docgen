@@ -1,130 +1,94 @@
-# DocGenius AI — AI Document Generator SaaS
+<p align="center">
+  <img src="./public/docgenius-logo.svg" alt="DocGenius AI logo" width="104" height="104" />
+</p>
 
-A production-ready AI-powered SaaS platform that generates professional **PDF, Word, PowerPoint, and Excel** documents using GPT-4o.
+<h1 align="center">DocGenius AI</h1>
 
-## 🚀 Quick Start
+<p align="center">
+  AI Document Workspace for Word, PDF, PowerPoint, Excel, Research, and Conversion
+</p>
+
+<p align="center">
+  <strong>Powered by Kreativan Technologies</strong>
+</p>
+
+<p align="center">
+  Created by Ayush Sharma (SynergyAYUSH)
+</p>
+
+DocGenius AI is a production-ready AI-powered SaaS platform that generates professional Word, PDF, PowerPoint, and Excel documents, supports editable research workflows, and includes smart conversion tools.
+
+## Quick Start
 
 ### 1. Install dependencies
 ```bash
-cd ai-docgen
 npm install
 ```
 
 ### 2. Configure environment
 ```bash
 cp .env.example .env.local
-# Fill in your values:
-# - NEXT_PUBLIC_SUPABASE_URL
-# - NEXT_PUBLIC_SUPABASE_ANON_KEY
-# - SUPABASE_SERVICE_ROLE_KEY
-# - OPENAI_API_KEY or OPENROUTER_API_KEY
-# - PYTHON_SERVICE_URL (default: http://localhost:8000)
 ```
+
+Fill in values for:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENROUTER_API_KEY` or OpenAI/OpenRouter equivalent
+- `PYTHON_SERVICE_URL` if different from `http://localhost:8000`
 
 ### 3. Set up Supabase
-- Create a project at [supabase.com](https://supabase.com)
-- Run `supabase/schema.sql` in the SQL Editor
-- Run `supabase/seed.sql` to load templates
-- Create a Storage bucket named **`documents`** (public)
+- Create a project in Supabase
+- Run [schema.sql](/c:/Users/ayush/Desktop/prompt/ai-docgen/supabase/schema.sql)
+- Run [seed.sql](/c:/Users/ayush/Desktop/prompt/ai-docgen/supabase/seed.sql)
+- Create a public storage bucket named `documents`
 
-### 4. Start Python microservice
+### 4. Start the full app
 ```bash
-cd python-service
-python -m venv venv
-venv\Scripts\activate       # Windows
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
-```
-
-### 5. Start Next.js dev server
-```bash
-cd ai-docgen
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+This starts:
+- Next.js on `http://localhost:3000`
+- Python document service on `http://localhost:8000`
 
----
+## Features
 
-## 🏗 Project Structure
+- AI document generation for `pdf`, `docx`, `pptx`, and `xlsx`
+- Rich text editing with TipTap
+- Research workspace with editable output and export to Word/PDF
+- Converter module for PDF, Word, PowerPoint, Excel, text, and PDF-to-images workflows
+- Templates, history, payments, token system, and plan handling
+- Supabase auth, storage, and database integration
+- Admin payment approval flow
 
-```
+## Project Structure
+
+```text
 ai-docgen/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx                  # Landing page
-│   │   ├── (auth)/
-│   │   │   ├── login/page.tsx
-│   │   │   └── signup/page.tsx
-│   │   ├── (dashboard)/
-│   │   │   ├── layout.tsx
-│   │   │   ├── dashboard/page.tsx
-│   │   │   ├── editor/page.tsx       # Main editor
-│   │   │   ├── templates/page.tsx
-│   │   │   ├── history/page.tsx
-│   │   │   └── premium/page.tsx
-│   │   └── api/
-│   │       ├── generate/route.ts     # AI content generation
-│   │       ├── rewrite/route.ts      # Text transformation
-│   │       ├── suggestions/route.ts  # AI suggestions
-│   │       ├── download/route.ts     # Calls Python service
-│   │       └── documents/route.ts    # Document CRUD
-│   ├── components/
-│   │   ├── Sidebar.tsx
-│   │   └── Editor/
-│   │       ├── TipTapEditor.tsx
-│   │       └── AIPanel.tsx
-│   ├── lib/
-│   │   ├── supabase/client.ts
-│   │   ├── supabase/server.ts
-│   │   ├── openai.ts
-│   │   ├── store.ts
-│   │   ├── tokens.ts
-│   │   └── utils.ts
-│   └── types/index.ts
-├── supabase/
-│   ├── schema.sql
-│   └── seed.sql
-└── python-service/
-    ├── main.py
-    ├── requirements.txt
-    ├── Dockerfile
-    └── routers/
-        ├── word.py
-        ├── pdf.py
-        ├── pptx.py
-        └── excel.py
+|-- src/
+|   |-- app/
+|   |   |-- (dashboard)/
+|   |   |-- api/
+|   |-- components/
+|   |-- lib/
+|   `-- types/
+|-- public/
+|-- python-service/
+|   |-- routers/
+|   `-- requirements.txt
+|-- scripts/
+`-- supabase/
 ```
 
----
+## Deployment
 
-## 🌐 Deployment
+- Frontend: Vercel
+- Python microservice: Railway or Render
+- Database/Auth/Storage: Supabase
 
-| Service | Platform |
-|---------|----------|
-| Next.js Frontend | Vercel |
-| Python Microservice | Railway / Render |
-| Database + Auth + Storage | Supabase |
+Set `PYTHON_SERVICE_URL` in your frontend deployment to the deployed Python service URL.
 
-### Deploy Python service to Railway
-1. Connect `python-service/` folder to a Railway project
-2. Railway auto-detects Dockerfile
-3. Set `PYTHON_SERVICE_URL` in Vercel to the Railway URL
+## Attribution
 
----
-
-## 🔑 Features
-
-- **4 document formats**: PDF, Word, PowerPoint, Excel
-- **GPT-4o powered** content generation
-- **Rich text editor** (TipTap) with full formatting toolbar
-- **AI Actions**: Rewrite, Expand, Summarize, Simplify, Improve
-- **Voice input** (Web Speech API)
-- **12 templates**: Business, Academic, Career, Finance, HR, Marketing
-- **Supabase auth**: Email + Google OAuth
-- **AI provider flexibility**: OpenAI or OpenRouter via env vars
-- **Token system**: Free (10), Pro (100), Premium (unlimited)
-- **Version history** and document management
-- **Share links** (coming soon / UI ready)
-- **Dark mode** with glassmorphism design
-- **Framer Motion** animations throughout
+This project was originally developed by Ayush Sharma (SynergyAYUSH) and was presented during an internship at Kreativan Technologies.

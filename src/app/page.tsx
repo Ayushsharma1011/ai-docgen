@@ -99,7 +99,7 @@ const steps = [
 const plans = [
   {
     name: "Free",
-    price: "$0",
+    price: "₹0",
     description: "Best for trying the workflow and creating a few core documents.",
     cta: "Start free",
     featured: false,
@@ -107,7 +107,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$19",
+    price: "₹500",
     description: "For professionals who need more formats, more AI, and faster output.",
     cta: "Upgrade to Pro",
     featured: true,
@@ -115,7 +115,7 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "$49",
+    price: "₹1000",
     description: "For teams or high-volume creators who want the most flexibility.",
     cta: "Go Premium",
     featured: false,
@@ -191,11 +191,12 @@ export default function LandingPage() {
               >
                 <Link
                   href="/signup"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold !text-slate-950 shadow-[0_16px_40px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 hover:opacity-95"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/70 bg-white px-6 py-3.5 text-sm font-semibold text-[#020617] shadow-[0_16px_40px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 hover:opacity-95"
+                  style={{ color: "#020617" }}
                 >
-                  <Sparkles className="h-4 w-4 text-slate-950" />
+                  <Sparkles className="h-4 w-4 text-[#020617]" />
                   Start for free
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 text-[#020617]" />
                 </Link>
                 <Link
                   href="/dashboard"
@@ -414,13 +415,14 @@ export default function LandingPage() {
                     href="/signup"
                     className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold ${
                       plan.featured
-                        ? "bg-white !text-slate-950 shadow-[0_16px_40px_rgba(255,255,255,0.12)]"
+                        ? "border border-white/70 bg-white text-[#020617] shadow-[0_16px_40px_rgba(255,255,255,0.12)]"
                         : "border border-white/12 bg-white/[0.04] text-white"
                     }`}
+                    style={plan.featured ? { color: "#020617" } : undefined}
                   >
-                    {plan.featured && <Sparkles className="h-4 w-4 text-slate-950" />}
+                    {plan.featured && <Sparkles className="h-4 w-4 text-[#020617]" />}
                     {plan.cta}
-                    <ArrowRight className={`h-4 w-4 ${plan.featured ? "text-slate-950" : "text-white"}`} />
+                    <ArrowRight className={`h-4 w-4 ${plan.featured ? "text-[#020617]" : "text-white"}`} />
                   </Link>
                 </div>
               ))}

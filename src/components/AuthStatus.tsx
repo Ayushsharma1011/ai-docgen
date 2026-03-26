@@ -99,7 +99,8 @@ export default function AuthStatus({ variant = "landing" }: AuthStatusProps) {
         </Link>
         <Link
           href="/signup"
-          className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-950 transition-opacity hover:opacity-90"
+          className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white px-4 py-2.5 text-sm font-semibold text-[#020617] transition-opacity hover:opacity-90"
+          style={{ color: "#020617" }}
         >
           Get Started Free
         </Link>

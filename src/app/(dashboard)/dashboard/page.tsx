@@ -85,7 +85,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-row">
               <Link
                 href="/editor"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition-opacity hover:opacity-90"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/70 bg-white px-4 py-3 text-sm font-semibold text-[#020617] transition-opacity hover:opacity-90"
+                style={{ color: "#020617" }}
               >
                 <FilePlus className="h-4 w-4" />
                 New document
@@ -207,7 +208,11 @@ export default function DashboardPage() {
             <FileText className="mx-auto mb-4 h-12 w-12 text-white/20" />
             <h3 className="text-lg font-semibold">No documents yet</h3>
             <p className="mt-2 text-sm text-white/45">Create your first AI-powered document to see it here.</p>
-            <Link href="/editor" className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition-opacity hover:opacity-90">
+            <Link
+              href="/editor"
+              className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-white/70 bg-white px-4 py-3 text-sm font-semibold text-[#020617] transition-opacity hover:opacity-90"
+              style={{ color: "#020617" }}
+            >
               <FilePlus className="h-4 w-4" />
               Create document
             </Link>

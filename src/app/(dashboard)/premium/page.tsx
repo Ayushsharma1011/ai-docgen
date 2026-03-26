@@ -9,7 +9,7 @@ import { requestJson } from "@/lib/client-api";
 const PLANS = [
   {
     name: "Free",
-    price: "$0",
+    price: "₹0",
     period: "/month",
     tokens: "10 tokens",
     grad: "linear-gradient(135deg,#64748b,#475569)",
@@ -28,7 +28,7 @@ const PLANS = [
   },
   {
     name: "Pro",
-    price: "$19",
+    price: "₹500",
     period: "/month",
     tokens: "100 tokens",
     grad: "linear-gradient(135deg,#2563eb,#7c3aed)",
@@ -49,7 +49,7 @@ const PLANS = [
   },
   {
     name: "Premium",
-    price: "$49",
+    price: "₹1000",
     period: "/month",
     tokens: "Unlimited",
     grad: "linear-gradient(135deg,#f59e0b,#f97316)",
@@ -172,8 +172,9 @@ export default function PremiumPage() {
                 void startCheckout(plan.action);
               }}
               className={`mt-8 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-opacity ${
-                plan.popular ? "bg-white text-slate-950 hover:opacity-90" : "border border-white/12 bg-white/[0.04] text-white hover:bg-white/[0.07]"
+                plan.popular ? "border border-white/70 bg-white text-[#020617] hover:opacity-90" : "border border-white/12 bg-white/[0.04] text-white hover:bg-white/[0.07]"
               }`}
+              style={plan.popular ? { color: "#020617" } : undefined}
               disabled={loadingKey === `plan-${plan.action.plan}`}
             >
               {loadingKey === `plan-${plan.action.plan}` ? "Preparing checkout..." : plan.cta}
